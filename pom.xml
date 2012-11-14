@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<description>simple uima examples</description>
+
+	<groupId>com.croeder</groupId>
+	<artifactId>uima_examples</artifactId>
+	<version>1.0-SNAPSHOT</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>amc-bakeoff.ucdenver.pvt</id>
+            <name>amc-bakeoff.ucdenver.pvt</name>
+            <url>http://amc-bakeoff.ucdenver.pvt:8081/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+	<dependencies>
+  		<dependency>
+            <groupId>org.apache.uima</groupId>
+            <artifactId>uimaj-core</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.uimafit</groupId>
+            <artifactId>uimafit</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+        </dependency>
+ 		<dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.uima</groupId>
+            <artifactId>ConceptMapper</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<plugin>
+         		<groupId>org.apache.maven.plugins</groupId>
+         		<artifactId>maven-surefire-plugin</artifactId>
+         		<version>2.12</version>
+         		<configuration>
+         		<argLine>-Xmx16g -d64</argLine>
+   	      		</configuration>
+	       </plugin>
+
+			<!-- specify the java version -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+  			<plugin>
+	            <!-- run using "mvn exec:java" -->
+	            <groupId>org.codehaus.mojo</groupId>
+	            <artifactId>exec-maven-plugin</artifactId>
+	            <version>1.1</version>
+	            <executions>
+	                <execution>
+	                    <goals>
+	                        <goal>java</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+	            <configuration>
+						<!-- mvn -e exec:java -Dinput=//net/amc-colfax/RAID1/data/medline/pubmed_batches/batch_pubmed_002740 -Dbionlp_output=output/batch_pubmed_002740  -Drdf_output=output/rdf -Dontology=CC -->
+
+	                <mainClass>com.croeder.uima_sample.BaseUimaFitPipeline</mainClass>
+	                <arguments>
+	                  <argument>target/classes/dictionaries/cmDict-GO-CC.xml</argument>
+					  <argument>${input}</argument> 
+	                  <argument>${bionlp_output}</argument>
+	                  <argument>${rdf_output}</argument>
+					  <argument>0</argument>
+					  <argument>-1</argument>
+					  <argument>.txt</argument>
+	                </arguments>
+	            </configuration>
+          	</plugin>
+
+
+		</plugins>
+	</build>
+</project>
