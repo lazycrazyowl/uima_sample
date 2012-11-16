@@ -5,9 +5,9 @@ some basic, simple, uima pipelines and analysis engines cribbed from
 both UIMA and uimaFIT tutorials:
 
 
- * GetStartedQuickAE.java
+* GetStartedQuickAE.java
 
- * BaseUimaFitPipeline.java
+* BaseUimaFitPipeline.java
 	RoomNumber.java
 	RoomNumberAnnotator.java
 	UimaFitRoomNumberAnnotator.java
