@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
 
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.tutorial.RoomNumber;
+//import org.apache.uima.tutorial.RoomNumber;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
