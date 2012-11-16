@@ -28,7 +28,7 @@
 	<version>1.0</version>
 	<types>
 		<typeDescription>
-			<name>org.apache.uima.tutorial.RoomNumber</name>
+			<name>com.croeder.uima_sample.RoomNumber</name>
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
 			<features>
@@ -40,7 +40,7 @@
 			</features>
 		</typeDescription>
 		<typeDescription>
-			<name>org.apache.uima.tutorial.Protein</name>
+			<name>com.croeder.uima_sample.Protein</name>
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
 			<features>
