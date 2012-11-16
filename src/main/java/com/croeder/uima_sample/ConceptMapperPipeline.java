@@ -45,9 +45,11 @@ public class ConceptMapperPipeline  {
 
 	protected static final String[] typeSystemStrs = {
  		"analysis_engine.primitive.DictTerm",
-		"org.apache.uima.conceptMapper.support.tokenizer.TokenAnnotation"
+		"org.apache.uima.conceptMapper.support.tokenizer.TokenAnnotation",
+		"org.apache.uima.examples.SourceDocumentInformation"
 	};
 
+	// Where are these from?
     public static String  STOPWORDS[] = {"i", "a", "is", "if", "be", "mm", "of", "no",
             "so", "mg", "ml", "as", "we", "at", "by", "in", "on", "or", "it", "to", "do", "kg", "km", "an", "did",
             "due", "any", "for", "use", "may", "and", "etc", "are", "but", "can", "our", "how", "nor", "the", "has",
@@ -62,6 +64,9 @@ public class ConceptMapperPipeline  {
             "significantly"};
 
 	protected TypeSystemDescription tsd;
+	// private in ConceptMapper
+  	private static final String PARAM_TOKENIZERDESCRIPTOR = "TokenizerDescriptorPath";
+
 
 
 	ConceptMapperPipeline() {
@@ -69,62 +74,35 @@ public class ConceptMapperPipeline  {
     }
 
 	protected List<AnalysisEngineDescription> getPipelineAeDescriptions(
-		File dictionaryFile,
-		File a1OutputDir,
-		File rdfOutputDir)
+		File dictionaryFile)
 	throws UIMAException, IllegalArgumentException, IOException {
 
-//desc/analysis_engine/aggregate/OffsetTokenizerMatcher.xml
 
-		//AnalysisEngineDescription offsetTokenizerDescription =
 
 		Object[] configData = new Object[] {
-			ConceptMapper.PARAM_DICT_FILE,  dictionaryFile.getAbsolutePath()
+			ConceptMapper.PARAM_DICT_FILE,  dictionaryFile.getAbsolutePath(),
+			//"DictionaryFileName",  dictionaryFile.getAbsolutePath(),
+			//"DictionaryFile",  dictionaryFile.getAbsolutePath()
+			//ConceptMapper.PARAM_TOKENIZERDESCRIPTOR, "analysis_engine.primitive.OffsetTokenizer"
+			PARAM_TOKENIZERDESCRIPTOR, "target/classes/descriptors/analysis_engine/primitive/OffsetTokenizer.xml"
 		};
 		AnalysisEngineDescription conceptMapperDescription = 
 			AnalysisEngineFactory.createAnalysisEngineDescription(
 				"analysis_engine.primitive.ConceptMapperOffsetTokenizer",
-				configData);
+				ConceptMapper.PARAM_DICT_FILE,  dictionaryFile.getAbsolutePath(),
+				PARAM_TOKENIZERDESCRIPTOR, "target/classes/descriptors/analysis_engine/primitive/OffsetTokenizer.xml"
+				);
+
+
+
+
+
 
         //AnalysisEngineDescription offsetTokenizerDescription = OffsetTokenizerFactory.buildOffsetTokenizerDescription(
         //        tsd, 
 	//			OffsetTokenizerFactory.buildConfigurationData(CaseMatchParamValue.CASE_IGNORE)
 		//);
 
-/****
-		// RDF Serialization 
-		// AnalysisEngine rdf = RdfSerialization_AE.createAnalysisEngine(
-		AnalysisEngineDescription rdfDesc = RdfSerialization_AE.createAnalysisEngineDescription(
-                tsd,
-                rdfOutputDir,
-                "proteins", // output file prefix
-                2000, // batch size
-                1 // batch number
-			);
-****/
-
-/*****
-		// CLASS MENTION CONVERTER
-		// GO is too general, this uses the name of the dictionary to change the id's
-		// so they include a clue of the GO sub-ontology. 
-		// change GO:0001234 to GO:CC_0001234 if GO-CC is what you ran.
-        AnalysisEngineDescription  mentionNameConverterDesc = null;
-		if (!goSubOntologyName.equals("")) {
-        	mentionNameConverterDesc =
-    			 ClassMentionConverter_AE.createAnalysisEngineDescription(tsd,
-					"GO:" + goSubOntologyName + "$1", new String[] { "GO:(.*)" });
-		}
-
-		// Annotation Filter
-		// ???
-
-
-		// BIONLP Serialization
-		// The "true" here says to add a 2nd line for normalized entities.
- 		// It requires a slot for the canonicalized name from Concept Mapper (see above).
-		AnalysisEngineDescription bionlpDesc = BionlpFormatPrinter_AE.createAnalysisEngineDescription(
-                tsd ,a1OutputDir, true);
-*****/
 
 		List<AnalysisEngineDescription> descriptions = new ArrayList<AnalysisEngineDescription>();
 		descriptions.add(conceptMapperDescription);
@@ -136,18 +114,15 @@ public class ConceptMapperPipeline  {
 	}
 
 
-	public void go(int numToSkip, int numToProcess, File dictionaryFile, File a1OutputDir, File rdfOutputDir, File inputDir, String extension)
+	public void go(File dictionaryFile, File inputDir)
 	throws UIMAException, ResourceInitializationException, FileNotFoundException, IOException {
 
 		List<AnalysisEngineDescription> aeDescList
-			= getPipelineAeDescriptions(dictionaryFile, a1OutputDir, rdfOutputDir);
-		AnalysisEngineDescription[] aeDescriptions 
-			= aeDescList.toArray(new AnalysisEngineDescription[0]);
-
-
+			= getPipelineAeDescriptions(dictionaryFile);
 
         CollectionReader cr = CollectionReaderFactory.createCollectionReader(
 			FileSystemCollectionReader.class,
+			tsd,
 			FileSystemCollectionReader.PARAM_INPUTDIR,	inputDir,
 			FileSystemCollectionReader.PARAM_ENCODING,	"UTF-8",
 			FileSystemCollectionReader.PARAM_LANGUAGE, 	"English",
@@ -156,13 +131,12 @@ public class ConceptMapperPipeline  {
         );
 
 
-		SimplePipeline.runPipeline(cr, aeDescriptions);
+		SimplePipeline.runPipeline(cr, aeDescList.toArray(new AnalysisEngineDescription[0]));
     }
 
 	
 	protected static void usage() {
-		System.out.println("java -cp . <this class> <dict dir> <input tree> <a1 output dir> <rdf output dir> <numToSkip> <numToProcess> [<input file extension>]");
-		System.out.println("  Set numToProcess to -1 to process all files under input tree.");
+		System.out.println("mvn exec:java -Dinput=<input tree> -Ddictionar=<dictionary file>");
 	}
 
 
@@ -175,21 +149,9 @@ public class ConceptMapperPipeline  {
 
 			File dictionaryFile  = null;
 			File inputDir = null;
-			File a1OutputDir   = null;
-			File rdfOutputDir   = null;
-			int numToSkip=0;
-			int numToProcess=0;
-			String extension="";
 		try {
-			dictionaryFile  = new File(args[0]);;
-			inputDir = new File(args[1]);
-			a1OutputDir   = new File(args[2]);
-			rdfOutputDir   = new File(args[3]);
-			numToSkip=Integer.parseInt(args[4]);
-			numToProcess=Integer.parseInt(args[5]);
-			if (args.length > 6 ) {
-				extension = args[6];
-			}
+			inputDir = new File(args[0]);
+			dictionaryFile  = new File(args[1]);;
 		
 		} catch(Exception x) {
 			System.out.println("error:" + x);
@@ -202,27 +164,10 @@ public class ConceptMapperPipeline  {
 	
 			BasicConfigurator.configure();
 	
-	        if (a1OutputDir.exists())  {
-				System.err.println("a1 output directory exists and will not be over-written.: " + a1OutputDir.getAbsolutePath() );
-				System.exit(1);
-			}
-			else {
-				a1OutputDir.mkdirs();
-			}
-
-	        if (rdfOutputDir.exists())  {
-				System.err.println("rdf output directory exists and will not be over-written.: " + rdfOutputDir.getAbsolutePath() );
-				System.exit(1);
-			}
-			else {
-				rdfOutputDir.mkdirs();
-			}
-			System.out.println("going with numToSkip:" + numToSkip 
-				+ " numToProcess:" + numToProcess
+			System.out.println("going with "
 				+ " dictionaryFile:" + dictionaryFile
-				+ " a1OutputDir:" + a1OutputDir
 				+ " inputDir:" + inputDir);	
-			pipeline.go(numToSkip, numToProcess, dictionaryFile,  a1OutputDir, rdfOutputDir, inputDir, extension);
+			pipeline.go(dictionaryFile,  inputDir);
 		}
 		catch(Exception x) {
 			System.err.println(x);
