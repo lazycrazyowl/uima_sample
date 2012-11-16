@@ -39,12 +39,12 @@ import org.uimafit.pipeline.JCasIterable;
 
 
 
-public class BaseUimaFitPipeline  {
+public class ProteinPipeline  {
 
 	private static Logger logger = Logger.getLogger(BaseUimaFitPipeline.class);
 
 	protected static final String[] typeSystemStrs = {
-		"org.apache.uima.examples.SourceDocumentInformation",	
+		"org.apache.uima.examples.SourceDocumentInformation",
 		"descriptors.TutorialTypeSystem"
 	};
 
@@ -54,7 +54,7 @@ public class BaseUimaFitPipeline  {
 	List<AnalysisEngineDescription> aeDescList;
 
 
-	BaseUimaFitPipeline(File inputDir) throws ResourceInitializationException {
+	ProteinPipeline(File inputDir) throws ResourceInitializationException {
         tsd = TypeSystemDescriptionFactory.createTypeSystemDescription(typeSystemStrs);
 
         cr = CollectionReaderFactory.createCollectionReader(
@@ -70,7 +70,7 @@ public class BaseUimaFitPipeline  {
 		aeDescList = new ArrayList<AnalysisEngineDescription>();
 
 		aeDescList.add( AnalysisEngineFactory.createPrimitiveDescription(
-			RoomNumberAnnotator.class));
+			ProteinAnnotator.class));
     }
 
 
@@ -109,7 +109,7 @@ public class BaseUimaFitPipeline  {
 
 		// main part
 		try {
-			BaseUimaFitPipeline pipeline = new BaseUimaFitPipeline (inputDir);
+			ProteinPipeline pipeline = new ProteinPipeline (inputDir);
 			pipeline.go(inputDir);
 		}
 		catch(Exception x) {
