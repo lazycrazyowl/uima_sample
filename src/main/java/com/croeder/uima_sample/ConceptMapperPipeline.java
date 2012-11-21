@@ -1,3 +1,4 @@
+// Copyright 2012, Chris Roeder 
 package com.croeder.uima_sample;;
 
 
@@ -31,6 +32,7 @@ import org.apache.uima.tools.components.FileSystemCollectionReader;
 import org.apache.uima.conceptMapper.ConceptMapper; 
 import org.apache.uima.conceptMapper.DictTerm;
 import org.apache.uima.conceptMapper.support.tokens.TokenFilter;
+import org.apache.uima.conceptMapper.support.tokens.TokenNormalizer;
 import org.apache.uima.conceptMapper.support.dictionaryResource.DictionaryResource_impl;
 
 import org.uimafit.factory.AnalysisEngineFactory;
@@ -40,9 +42,24 @@ import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.component.xwriter.CASDumpWriter;
 
-
-
 import uima.tt.TokenAnnotation;
+
+//import org.cleartk.token.type.Sentence;
+//import org.cleartk.syntax.opennlp.SentenceAnnotator;
+
+import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperAggregateFactory;
+import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperFactory;
+import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.tokenizer.OffsetTokenizerFactory;
+
+
+// WTF?!!
+import edu.ucdenver.ccp.nlp.ext.uima.types.Sentence;
+
+
+import edu.ucdenver.ccp.nlp.core.uima.annotation.CCPTextAnnotation;
+import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.ExplicitSentenceCasInserter;
+import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.LingPipeSentenceDetector_AE;
+
 
 
 public class ConceptMapperPipeline  {
@@ -51,6 +68,16 @@ public class ConceptMapperPipeline  {
 
 	protected static final String[] typeSystemStrs = {
  		"analysis_engine.primitive.DictTerm",
+
+		// the train of type-system pain.....
+		//"org.cleartk.token.type.Sentence",
+		//"edu.ucdenver.ccp.nlp.ext.uima.types.Sentence",
+		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.CCPSentenceAnnotation",
+		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.TypeSystem",
+		//"edu.ucdenver.ccp.nlp.core.uima.TypeSystem",
+		"edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.TypeSystem",
+		"edu.ucdenver.ccp.nlp.core.uima.TypeSystem",
+
 		"org.apache.uima.conceptMapper.support.tokenizer.TokenAnnotation",
 		"org.apache.uima.examples.SourceDocumentInformation"
 	};
@@ -70,25 +97,46 @@ public class ConceptMapperPipeline  {
 
 		List<AnalysisEngineDescription> descriptions = new ArrayList<AnalysisEngineDescription>();
 
+		// OpenNLP Sentence Detector by way of ClearTK
+		// not work because these sentences are derived from uima.tcas.Annotation
+        // instead of org.apache.uima.jcas.tcas.Annotation...
+		//descriptions.add(SentenceAnnotator.getDescription());
 
-		// Concept Mapper
- 		//File tokenizerDescriptorPath = FileUtil.createTempFile("tokenizer-desc", "xml");
-        //UIMA_Util.outputDescriptorToFile(tokenizerDescription, tokenizerDescriptorPath);
 
+        // SENTENCE DETECTOR
+        AnalysisEngineDescription sentenceDetectorDesc
+           = LingPipeSentenceDetector_AE.createAnalysisEngineDescription(tsd, ExplicitSentenceCasInserter.class, true);
+		descriptions.add(sentenceDetectorDesc);
+
+
+
+		/**
+		// Concept Mapper  -  (so far failed attempt at creating w/out the factory)
 		AnalysisEngineDescription conceptMapperDescription = 
 			AnalysisEngineFactory.createAnalysisEngineDescription(
 				"analysis_engine.primitive.ConceptMapperOffsetTokenizer",
 				ConceptMapper.PARAM_DICT_FILE,  dictionaryFile.getAbsolutePath(),
-				"TokenizerDescriptorPath", "target/classes/descriptors/analysis_engine/primitive/OffsetTokenizer.xml",
-				//"TokenizerDescriptorPath", tokenizerDescriptorPath,
-				ConceptMapper.PARAM_ATTRIBUTE_LIST, 	new String[] { "canonical" },	
+				// sentence annotation class TOKEN_TEXT_FEATURE_NAME
+
+				ConceptMapper.PARAM_SEARCHSTRATEGY, "SkipAnyMatch",
+				ConceptMapper.PARAM_ORDERINDEPENDENTLOOKUP,  true,
+				"SpanFeatureStructure", 				Sentence.class,
+                ConceptMapper.PARAM_TOKENANNOTATION,	TokenAnnotation.class.getName(),
+				ConceptMapper.PARAM_FINDALLMATCHES, 	true,
+				TokenNormalizer.PARAM_CASE_MATCH, 		"ignoreall",
+				"TokenizerDescriptorPath", 				"target/classes/descriptors/analysis_engine/primitive/OffsetTokenizer.xml",
+
+				// stopwordlist TokenFilter.PARAM_STOPWORDS
+
+				// Output UIMA entities and meta data to describe their features
+                ConceptMapper.PARAM_ANNOTATION_NAME,	DictTerm.class.getName(),
+	 			ConceptMapper.PARAM_ATTRIBUTE_LIST, 	new String[] { "canonical" },	
 				//ConceptMapper.PARAM_ATTRIBUTE_LIST, 	new String[] { "canonical", "id" },	
                 //ConceptMapper.PARAM_FEATURE_LIST,		new String[] {"DictCanon", "ID"},
                 ConceptMapper.PARAM_FEATURE_LIST,		new String[] {"DictCanon"},
+
                 ConceptMapper.PARAM_MATCHEDFEATURE,		"matchedText",
-                ConceptMapper.PARAM_ANNOTATION_NAME,	DictTerm.class.getName(),
                 ConceptMapper.PARAM_ENCLOSINGSPAN,		"enclosingSpan",
-                ConceptMapper.PARAM_TOKENANNOTATION,	TokenAnnotation.class.getName(),
 				// tokenClassFeatuerName,tokenTextFeatureName, tokenTypeFeaturename
                 ConceptMapper.PARAM_TOKENCLASSWRITEBACKFEATURENAMES, new String[0],
                 TokenFilter.PARAM_EXCLUDEDTOKENCLASSES, new String[0],
@@ -96,8 +144,10 @@ public class ConceptMapperPipeline  {
                 TokenFilter.PARAM_INCLUDEDTOKENCLASSES, new String[0],
                 TokenFilter.PARAM_INCLUDEDTOKENTYPES, 	new Integer[0],
                 "LanguageID", 							"en",
-                DictionaryResource_impl.PARAM_DUMPDICT, true 
-				);
+
+                DictionaryResource_impl.PARAM_DUMPDICT, false  //true 
+			);
+
 		ExternalResourceDescription[] externalResources 
 			= conceptMapperDescription.getResourceManagerConfiguration().getExternalResources();
         ExternalResourceDescription dictionaryFileResourceDesc = externalResources[0];
@@ -105,82 +155,41 @@ public class ConceptMapperPipeline  {
 			"fileUrl", dictionaryFile.getAbsolutePath());
         conceptMapperDescription.getResourceManagerConfiguration().setExternalResources(
                 new ExternalResourceDescription[] { dictionaryFileResourceDesc });
-
-		// DEBUG org.springframework.validation.DataBinder  - DataBinder requires binding of required fields [outFile,writeDocumentMetaData,rawFeaturePatterns,rawTypePatterns]
-
-
+		// DEBUG org.springframework.validation.DataBinder  - DataBinder requires binding of required fields 
+		// [outFile,writeDocumentMetaData,rawFeaturePatterns,rawTypePatterns]
 		descriptions.add(conceptMapperDescription);
+		**/
 
+		String[] stopwordList = {};
+		AnalysisEngineDescription conceptMapperDescFromFactory = 
+             ConceptMapperAggregateFactory.getOffsetTokenizerConceptMapperAggregateDescription(
+                tsd,
+                //dictionaryFile.getAbsolutePath(),
+                dictionaryFile,
+                ConceptMapperFactory.TokenNormalizerConfigParam.CaseMatchParamValue.CASE_IGNORE,// CASE_SENSITIVE,
+                ConceptMapperFactory.SearchStrategyParamValue.SKIP_ANY_MATCH_ALLOW_OVERLAP,// CONTIGUOUS_MATCH,
+                Sentence.class, // spanFeatureStructureClass, //ExplicitSentenceCasInserter.SENTENCE_ANNOTATION_CLASS,
+                null,           // stemmerClass,
+                stopwordList,
+                true,           // orderIndependentLookup,
+                true,           // findAllMatches,
+                false           //replaceCommaWithAnd
+            );
+
+
+
+		// CAS Dumper
         descriptions.add(AnalysisEngineFactory.createPrimitiveDescription(
             CASDumpWriter.class,
             CASDumpWriter.PARAM_OUTPUT_FILE, "cm_output.txt"));
 
+		// Dict Term Reporter 
         descriptions.add(AnalysisEngineFactory.createPrimitiveDescription(
 			DictTermReporter.class));
 
 		return descriptions;
 	}
 
-/***
-  		public static Object[] buildConfigurationData(
-			String[] attributeList, 
-			File dictionaryFile, 
-			String[] featureList,
-            boolean findAllMatches, 
-			String matchedTokensFeatureName, 
-			boolean orderIndependentLookup,
-            String resultingAnnotationMatchedTextFeature, 
-			Class<? extends Annotation> resultingAnnotationClass,
-            String resultingEnclosingSpanName, 
-			SearchStrategyParamValue searchStrategyParamValue,
-            Class<? extends Annotation> spanFeatureStructureClass, 
-			Class<? extends Annotation> tokenAnnotationClass,
-            String tokenClassFeatureName, 
-			String[] tokenClassWriteBackFeatureNames, 
-			String tokenTextFeatureName,
-            String tokenTypeFeatureName, 
-			File tokenizerDescriptorPath, 
-			CaseMatchParamValue caseMatchParamValue,
-            boolean replaceCommaWithAnd, 
-			Class<? extends Stemmer> stemmerClass, 
-			File stemmerDictionaryFile,
-            String[] excludedTokenClasses, 
-			Integer[] excludedTokenTypes, 
-			String[] includedTokenClasses,
-            Integer[] includedTokenTypes, 
-			String[] stopwords, 
-			String languageId, 
-			boolean printDictionary) {
-				Object[] configData = new Object[] {
-				ConceptMapper.PARAM_ATTRIBUTE_LIST, 	attributeList,
-                ConceptMapper.PARAM_DICT_FILE,			dictionaryFile.getAbsolutePath(),
-                ConceptMapper.PARAM_FEATURE_LIST,		featureList,
-                ConceptMapper.PARAM_FINDALLMATCHES,		findAllMatches,
-                ConceptMapper.PARAM_MATCHEDTOKENSFEATURENAME,matchedTokensFeatureName,
-                ConceptMapper.PARAM_ORDERINDEPENDENTLOOKUP,orderIndependentLookup,
-                ConceptMapper.PARAM_MATCHEDFEATURE,		resultingAnnotationMatchedTextFeature,
-                ConceptMapper.PARAM_ANNOTATION_NAME,	resultingAnnotationClass.getName(),
-                ConceptMapper.ENCLOSINGSPAN,			resultingEnclosingSpanName,
-                ConceptMapper.PARAM_SEARCHSTRATEGY,		searchStrategyParamValue.paramValue(),
-                "SpanFeatureStructure", 				spanFeatureStructureClass.getName(),
-                ConceptMapper.PARAM_TOKENANNOTATION,	tokenAnnotationClass.getName(),
-                ConceptMapper.PARAM_TOKENCLASSWRITEBACKFEATURENAMES,tokenClassWriteBackFeatureNames,
-                "TokenizerDescriptorPath",				tokenizerDescriptorPath.getAbsolutePath(),
-
-                TokenNormalizer.PARAM_CASE_MATCH, 		caseMatchParamValue.paramValue(),
-                "ReplaceCommaWithAND", 					replaceCommaWithAnd,
-
-                TokenFilter.PARAM_EXCLUDEDTOKENCLASSES, excludedTokenClasses,
-                TokenFilter.PARAM_EXCLUDEDTOKENTYPES, 	excludedTokenTypes,
-                TokenFilter.PARAM_INCLUDEDTOKENCLASSES, includedTokenClasses,
-                TokenFilter.PARAM_INCLUDEDTOKENTYPES, 	includedTokenTypes,
-                TokenFilter.PARAM_STOPWORDS, 			stopwords,
-
-                "LanguageID", 							languageId,
-                DictionaryResource_impl.PARAM_DUMPDICT, printDictionary 
-				};
-		};
-***/
 
 	public void go(File dictionaryFile, File inputDir)
 	throws UIMAException, ResourceInitializationException, FileNotFoundException, IOException {

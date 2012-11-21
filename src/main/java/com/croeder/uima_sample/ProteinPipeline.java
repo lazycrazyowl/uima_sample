@@ -1,3 +1,4 @@
+// Copyright 2012, Chris Roeder 
 package com.croeder.uima_sample;;
 
 

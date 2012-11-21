@@ -1,3 +1,4 @@
+// Copyright 2012, Chris Roeder 
 package com.croeder.uima_sample;
 
 import static org.uimafit.util.JCasUtil.select;
@@ -32,7 +33,6 @@ public class DictTermReporter extends JCasAnnotator_ImplBase {
 	Logger logger = Logger.getLogger(GetStartedQuickAE.class);
 
 	public void process(JCas jCas) {
-		System.out.println("DictTermReporter processing.......");
 
 		for (SourceDocumentInformation doc : select(jCas, SourceDocumentInformation.class)) {
 			System.out.println("" + doc.getDocumentSize() + doc.getUri());
