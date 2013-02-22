@@ -17,6 +17,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import org.apache.uima.UIMAException;
+import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
@@ -27,6 +28,7 @@ import org.apache.uima.pear.util.FileUtil;
 import org.apache.uima.resource.ExternalResourceDescription;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.apache.uima.resource.metadata.ResourceMetaData;
 import org.apache.uima.tools.components.FileSystemCollectionReader;
 
 import org.apache.uima.conceptMapper.ConceptMapper; 
@@ -41,6 +43,7 @@ import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.component.xwriter.CASDumpWriter;
+import org.uimafit.component.xwriter.XWriter;
 
 import uima.tt.TokenAnnotation;
 
@@ -61,6 +64,10 @@ import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.ExplicitSenten
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.LingPipeSentenceDetector_AE;
 
 
+import org.apache.uima.cas.impl.XmiCasSerializer;
+import org.apache.uima.util.XMLSerializer;
+import org.uimafit.factory.JCasFactory;
+import org.xml.sax.SAXException;
 
 public class ConceptMapperUCDenverPipeline  {
 
@@ -91,11 +98,11 @@ public class ConceptMapperUCDenverPipeline  {
     }
 
 
-	protected List<AnalysisEngineDescription> getPipelineAeDescriptions(
+	protected List<AnalysisEngine> getPipelineEngines(
 		File dictionaryFile)
 	throws UIMAException, IllegalArgumentException, IOException {
 
-		List<AnalysisEngineDescription> descriptions = new ArrayList<AnalysisEngineDescription>();
+		List<AnalysisEngine> engines = new ArrayList<AnalysisEngine>();
 
 		// OpenNLP Sentence Detector by way of ClearTK
 		// not work because these sentences are derived from uima.tcas.Annotation
@@ -106,60 +113,50 @@ public class ConceptMapperUCDenverPipeline  {
         // SENTENCE DETECTOR
         AnalysisEngineDescription sentenceDetectorDesc
            = LingPipeSentenceDetector_AE.createAnalysisEngineDescription(tsd, ExplicitSentenceCasInserter.class, true);
-		descriptions.add(sentenceDetectorDesc);
+		engines.add(UIMAFramework.produceAnalysisEngine(sentenceDetectorDesc));
 
-
-	 	// TOKENIZER? AND CONCEPT MAPPER
-		/** UCDenver way
-		String[] stopwordList = {};
-		AnalysisEngineDescription conceptMapperDescFromFactory = 
-             ConceptMapperAggregateFactory.getOffsetTokenizerConceptMapperAggregateDescription(
-                tsd,
-                //dictionaryFile.getAbsolutePath(),
-                dictionaryFile,
-                ConceptMapperFactory.TokenNormalizerConfigParam.CaseMatchParamValue.CASE_IGNORE,// CASE_SENSITIVE,
-                ConceptMapperFactory.SearchStrategyParamValue.SKIP_ANY_MATCH_ALLOW_OVERLAP,// CONTIGUOUS_MATCH,
-                //Sentence.class, // spanFeatureStructureClass, //ExplicitSentenceCasInserter.SENTENCE_ANNOTATION_CLASS,
-                ExplicitSentenceCasInserter.SENTENCE_ANNOTATION_CLASS,
-                null,           // stemmerClass,
-                stopwordList,
-                true,           // orderIndependentLookup,
-                true,           // findAllMatches,
-                false           //replaceCommaWithAnd
-            );
-		***/
 
 		Object[] config = new Object[0];;
 		// TOKENIZER from xml files ** THE PATH MUST BE A FILE SYSTEM PATH **
-		AnalysisEngine tokenizerDescFromPath = 
+		AnalysisEngine tokenizerAE = 
 			AnalysisEngineFactory.createAnalysisEngineFromPath(
 				"target/classes/descriptors/analysis_engine/primitive/OffsetTokenizer.xml", config);
+		engines.add(tokenizerAE);
+
 		//CONCEPT MAPPER from xml files ** ...FILE SYSTEM PATH **
-		AnalysisEngine conceptMapperDescFromPath = 
+		AnalysisEngine conceptMapperAE = 
 			AnalysisEngineFactory.createAnalysisEngineFromPath(
 				"target/classes/descriptors/analysis_engine/primitive/ConceptMapperOffsetTokenizer.xml", config);
+		engines.add(conceptMapperAE);
 
 
 		// CAS Dumper
-        descriptions.add(AnalysisEngineFactory.createPrimitiveDescription(
+        AnalysisEngineDescription aeD =  AnalysisEngineFactory.createPrimitiveDescription(
             CASDumpWriter.class,
-            CASDumpWriter.PARAM_OUTPUT_FILE, "cm_output.txt"));
+            CASDumpWriter.PARAM_OUTPUT_FILE, "cm_output.txt");
+		engines.add(UIMAFramework.produceAnalysisEngine(aeD));
 
+
+
+		/**
 		// Dict Term Reporter 
         descriptions.add(AnalysisEngineFactory.createPrimitiveDescription(
 			DictTermReporter.class));
+		**/
 
-		return descriptions;
+		return engines;
 	}
 
 
 	public void go(File dictionaryFile, File inputDir)
 	throws UIMAException, ResourceInitializationException, FileNotFoundException, IOException {
 
-		List<AnalysisEngineDescription> aeDescList
-			= getPipelineAeDescriptions(dictionaryFile);
+		List<AnalysisEngine> aeList
+			= getPipelineEngines(dictionaryFile);
 
-        CollectionReader cr = CollectionReaderFactory.createCollectionReader(
+
+
+        CollectionReader reader = CollectionReaderFactory.createCollectionReader(
 			FileSystemCollectionReader.class,
 			tsd,
 			FileSystemCollectionReader.PARAM_INPUTDIR,	inputDir,
@@ -169,7 +166,13 @@ public class ConceptMapperUCDenverPipeline  {
 			FileSystemCollectionReader.PARAM_LENIENT,	"true"
         );
 
-		SimplePipeline.runPipeline(cr, aeDescList.toArray(new AnalysisEngineDescription[0]));
+
+        AnalysisEngine xWriter = AnalysisEngineFactory.createPrimitive(XWriter.class, tsd,
+                XWriter.PARAM_OUTPUT_DIRECTORY_NAME, "./");
+	
+		aeList.add(xWriter);
+
+		SimplePipeline.runPipeline(reader, aeList.toArray(new AnalysisEngine[0]));
     }
 
 	

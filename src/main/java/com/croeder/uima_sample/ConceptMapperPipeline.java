@@ -2,7 +2,6 @@
 package com.croeder.uima_sample;;
 
 
-
 import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,6 +16,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import org.apache.uima.UIMAException;
+import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
@@ -27,7 +27,10 @@ import org.apache.uima.pear.util.FileUtil;
 import org.apache.uima.resource.ExternalResourceDescription;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.apache.uima.resource.metadata.ResourceMetaData;
 import org.apache.uima.tools.components.FileSystemCollectionReader;
+import org.apache.uima.cas.impl.XmiCasSerializer;
+import org.apache.uima.util.XMLSerializer;
 
 import org.apache.uima.conceptMapper.ConceptMapper; 
 import org.apache.uima.conceptMapper.DictTerm;
@@ -38,31 +41,24 @@ import org.apache.uima.conceptMapper.support.dictionaryResource.DictionaryResour
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
+import org.uimafit.factory.JCasFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.component.xwriter.CASDumpWriter;
+import org.uimafit.component.xwriter.XWriter;
 
 import uima.tt.TokenAnnotation;
 
-//import org.cleartk.token.type.Sentence;
-//import org.cleartk.syntax.opennlp.SentenceAnnotator;
-
-import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperAggregateFactory;
-import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperFactory;
-import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.tokenizer.OffsetTokenizerFactory;
-
-
-// WTF?!!
 import edu.ucdenver.ccp.nlp.ext.uima.types.Sentence;
-
-
 import edu.ucdenver.ccp.nlp.core.uima.annotation.CCPTextAnnotation;
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.ExplicitSentenceCasInserter;
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.LingPipeSentenceDetector_AE;
 
+import org.xml.sax.SAXException;
 
 
-public class ConceptMapperPipeline  {
+
+public class ConceptMapperUCDenverPipeline  {
 
 	private static Logger logger = Logger.getLogger(BaseUimaFitPipeline.class);
 
@@ -70,7 +66,6 @@ public class ConceptMapperPipeline  {
  		"analysis_engine.primitive.DictTerm",
 
 		// the train of type-system pain.....
-		//"org.cleartk.token.type.Sentence",
 		//"edu.ucdenver.ccp.nlp.ext.uima.types.Sentence",
 		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.CCPSentenceAnnotation",
 		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.TypeSystem",
@@ -86,16 +81,16 @@ public class ConceptMapperPipeline  {
   	private static final String PARAM_TOKENIZERDESCRIPTOR = "TokenizerDescriptorPath";
 
 
-	ConceptMapperPipeline() {
+	ConceptMapperUCDenverPipeline() {
         tsd = TypeSystemDescriptionFactory.createTypeSystemDescription(typeSystemStrs);
     }
 
 
-	protected List<AnalysisEngineDescription> getPipelineAeDescriptions(
+	protected List<AnalysisEngine> getPipelineEngines(
 		File dictionaryFile)
 	throws UIMAException, IllegalArgumentException, IOException {
 
-		List<AnalysisEngineDescription> descriptions = new ArrayList<AnalysisEngineDescription>();
+		List<AnalysisEngine> engines = new ArrayList<AnalysisEngine>();
 
 		// OpenNLP Sentence Detector by way of ClearTK
 		// not work because these sentences are derived from uima.tcas.Annotation
@@ -106,98 +101,50 @@ public class ConceptMapperPipeline  {
         // SENTENCE DETECTOR
         AnalysisEngineDescription sentenceDetectorDesc
            = LingPipeSentenceDetector_AE.createAnalysisEngineDescription(tsd, ExplicitSentenceCasInserter.class, true);
-		descriptions.add(sentenceDetectorDesc);
+		engines.add(UIMAFramework.produceAnalysisEngine(sentenceDetectorDesc));
+
+
+		Object[] config = new Object[0];;
+		// TOKENIZER from xml files ** THE PATH MUST BE A FILE SYSTEM PATH **
+		AnalysisEngine tokenizerAE = 
+			AnalysisEngineFactory.createAnalysisEngineFromPath(
+				"target/classes/descriptors/analysis_engine/primitive/OffsetTokenizer.xml", config);
+		engines.add(tokenizerAE);
+
+		//CONCEPT MAPPER from xml files ** ...FILE SYSTEM PATH **
+		AnalysisEngine conceptMapperAE = 
+			AnalysisEngineFactory.createAnalysisEngineFromPath(
+				"target/classes/descriptors/analysis_engine/primitive/ConceptMapperOffsetTokenizer.xml", config);
+		engines.add(conceptMapperAE);
+
+
+		// CAS Dumper
+        AnalysisEngineDescription aeD =  AnalysisEngineFactory.createPrimitiveDescription(
+            CASDumpWriter.class,
+            CASDumpWriter.PARAM_OUTPUT_FILE, "cm_output.txt");
+		engines.add(UIMAFramework.produceAnalysisEngine(aeD));
 
 
 
 		/**
-		// Concept Mapper  -  (so far failed attempt at creating w/out the factory)
-		AnalysisEngineDescription conceptMapperDescription = 
-			AnalysisEngineFactory.createAnalysisEngineDescription(
-				"analysis_engine.primitive.ConceptMapperOffsetTokenizer",
-				ConceptMapper.PARAM_DICT_FILE,  dictionaryFile.getAbsolutePath(),
-				// sentence annotation class TOKEN_TEXT_FEATURE_NAME
-
-				ConceptMapper.PARAM_SEARCHSTRATEGY, "SkipAnyMatch",
-				ConceptMapper.PARAM_ORDERINDEPENDENTLOOKUP,  true,
-				"SpanFeatureStructure", 				Sentence.class,
-                ConceptMapper.PARAM_TOKENANNOTATION,	TokenAnnotation.class.getName(),
-				ConceptMapper.PARAM_FINDALLMATCHES, 	true,
-				TokenNormalizer.PARAM_CASE_MATCH, 		"ignoreall",
-				"TokenizerDescriptorPath", 				"target/classes/descriptors/analysis_engine/primitive/OffsetTokenizer.xml",
-
-				// stopwordlist TokenFilter.PARAM_STOPWORDS
-
-				// Output UIMA entities and meta data to describe their features
-                ConceptMapper.PARAM_ANNOTATION_NAME,	DictTerm.class.getName(),
-	 			ConceptMapper.PARAM_ATTRIBUTE_LIST, 	new String[] { "canonical" },	
-				//ConceptMapper.PARAM_ATTRIBUTE_LIST, 	new String[] { "canonical", "id" },	
-                //ConceptMapper.PARAM_FEATURE_LIST,		new String[] {"DictCanon", "ID"},
-                ConceptMapper.PARAM_FEATURE_LIST,		new String[] {"DictCanon"},
-
-                ConceptMapper.PARAM_MATCHEDFEATURE,		"matchedText",
-                ConceptMapper.PARAM_ENCLOSINGSPAN,		"enclosingSpan",
-				// tokenClassFeatuerName,tokenTextFeatureName, tokenTypeFeaturename
-                ConceptMapper.PARAM_TOKENCLASSWRITEBACKFEATURENAMES, new String[0],
-                TokenFilter.PARAM_EXCLUDEDTOKENCLASSES, new String[0],
-                TokenFilter.PARAM_EXCLUDEDTOKENTYPES, 	new Integer[0],
-                TokenFilter.PARAM_INCLUDEDTOKENCLASSES, new String[0],
-                TokenFilter.PARAM_INCLUDEDTOKENTYPES, 	new Integer[0],
-                "LanguageID", 							"en",
-
-                DictionaryResource_impl.PARAM_DUMPDICT, false  //true 
-			);
-
-		ExternalResourceDescription[] externalResources 
-			= conceptMapperDescription.getResourceManagerConfiguration().getExternalResources();
-        ExternalResourceDescription dictionaryFileResourceDesc = externalResources[0];
-        dictionaryFileResourceDesc.getResourceSpecifier().setAttributeValue(
-			"fileUrl", dictionaryFile.getAbsolutePath());
-        conceptMapperDescription.getResourceManagerConfiguration().setExternalResources(
-                new ExternalResourceDescription[] { dictionaryFileResourceDesc });
-		// DEBUG org.springframework.validation.DataBinder  - DataBinder requires binding of required fields 
-		// [outFile,writeDocumentMetaData,rawFeaturePatterns,rawTypePatterns]
-		descriptions.add(conceptMapperDescription);
-		**/
-
-		String[] stopwordList = {};
-		AnalysisEngineDescription conceptMapperDescFromFactory = 
-             ConceptMapperAggregateFactory.getOffsetTokenizerConceptMapperAggregateDescription(
-                tsd,
-                //dictionaryFile.getAbsolutePath(),
-                dictionaryFile,
-                ConceptMapperFactory.TokenNormalizerConfigParam.CaseMatchParamValue.CASE_IGNORE,// CASE_SENSITIVE,
-                ConceptMapperFactory.SearchStrategyParamValue.SKIP_ANY_MATCH_ALLOW_OVERLAP,// CONTIGUOUS_MATCH,
-                Sentence.class, // spanFeatureStructureClass, //ExplicitSentenceCasInserter.SENTENCE_ANNOTATION_CLASS,
-                null,           // stemmerClass,
-                stopwordList,
-                true,           // orderIndependentLookup,
-                true,           // findAllMatches,
-                false           //replaceCommaWithAnd
-            );
-
-
-
-		// CAS Dumper
-        descriptions.add(AnalysisEngineFactory.createPrimitiveDescription(
-            CASDumpWriter.class,
-            CASDumpWriter.PARAM_OUTPUT_FILE, "cm_output.txt"));
-
 		// Dict Term Reporter 
         descriptions.add(AnalysisEngineFactory.createPrimitiveDescription(
 			DictTermReporter.class));
+		**/
 
-		return descriptions;
+		return engines;
 	}
 
 
 	public void go(File dictionaryFile, File inputDir)
 	throws UIMAException, ResourceInitializationException, FileNotFoundException, IOException {
 
-		List<AnalysisEngineDescription> aeDescList
-			= getPipelineAeDescriptions(dictionaryFile);
+		List<AnalysisEngine> aeList
+			= getPipelineEngines(dictionaryFile);
 
-        CollectionReader cr = CollectionReaderFactory.createCollectionReader(
+
+
+        CollectionReader reader = CollectionReaderFactory.createCollectionReader(
 			FileSystemCollectionReader.class,
 			tsd,
 			FileSystemCollectionReader.PARAM_INPUTDIR,	inputDir,
@@ -207,12 +154,19 @@ public class ConceptMapperPipeline  {
 			FileSystemCollectionReader.PARAM_LENIENT,	"true"
         );
 
-		SimplePipeline.runPipeline(cr, aeDescList.toArray(new AnalysisEngineDescription[0]));
+
+        AnalysisEngine xWriter = AnalysisEngineFactory.createPrimitive(XWriter.class, tsd,
+                XWriter.PARAM_OUTPUT_DIRECTORY_NAME, "./");
+	
+		aeList.add(xWriter);
+
+		SimplePipeline.runPipeline(reader, aeList.toArray(new AnalysisEngine[0]));
     }
 
 	
 	protected static void usage() {
-		System.out.println("mvn exec:java -Dinput=<input tree> -Ddictionar=<dictionary file>");
+	 	System.out.println("mvn exec:java -Dinput=<input tree> -Ddictionar=<dictionary file>");
+		System.out.println("mvn exec:java -Dinput=/Users/roederc/data/fulltext/pmc/Yeast -Ddictionary=classes/dictionaries/cmDict-APO.xml");
 	}
 
 
@@ -236,7 +190,7 @@ public class ConceptMapperPipeline  {
 			System.exit(2);
 		}
 		try {
-			ConceptMapperPipeline pipeline = new ConceptMapperPipeline ();
+			ConceptMapperUCDenverPipeline pipeline = new ConceptMapperUCDenverPipeline ();
 	
 			BasicConfigurator.configure();
 	

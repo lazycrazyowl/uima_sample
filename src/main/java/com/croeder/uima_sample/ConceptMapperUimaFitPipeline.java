@@ -74,12 +74,16 @@ public class ConceptMapperUimaFitPipeline  {
 		//"edu.ucdenver.ccp.nlp.ext.uima.types.Sentence",
 		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.CCPSentenceAnnotation",
 		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.TypeSystem",
-		//"edu.ucdenver.ccp.nlp.core.uima.TypeSystem",
 		"edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.TypeSystem",
 		"edu.ucdenver.ccp.nlp.core.uima.TypeSystem",
 
 		"org.apache.uima.conceptMapper.support.tokenizer.TokenAnnotation",
-		"org.apache.uima.examples.SourceDocumentInformation"
+		"org.apache.uima.examples.SourceDocumentInformation",
+
+		"edu.ucdenver.ccp.nlp.wrapper.conceptmapper.OntologyTerm",
+		"edu.ucdenver.ccp.nlp.wrapper.conceptmapper.TypeSystem",
+
+		"uima.tt.TokenAnnotation"
 	};
 
 	protected TypeSystemDescription tsd;
@@ -176,7 +180,7 @@ public class ConceptMapperUimaFitPipeline  {
                 true,           // findAllMatches,
                 false           //replaceCommaWithAnd
             );
-
+		descriptions.add(conceptMapperDescFromFactory);
 
 
 		// CAS Dumper
@@ -214,7 +218,7 @@ public class ConceptMapperUimaFitPipeline  {
 	
 	protected static void usage() {
 	 	System.out.println("mvn exec:java -Dinput=<input tree> -Ddictionar=<dictionary file>");
-		System.out.println("mvn exec:java -Dinput=/Users/roederc/data/fulltext/pmc/Yeast -Ddictionary=classes/dictionaries/cmDict-APO.xml");
+		System.out.println("mvn exec:java -Dinput=/Users/roederc/data/fulltext/pmc/Yeast -Ddictionary=target/classes/dictionaries/cmDict-APO.xml");
 	}
 
 

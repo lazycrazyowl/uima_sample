@@ -144,7 +144,13 @@
 					<!--<mainClass>com.croeder.uima_sample.ProteinPipeline</mainClass>-->
 					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/medline/pubmed_batches/batch_pubmed_005533/ -->
 
-					<mainClass>com.croeder.uima_sample.ConceptMapperPipeline</mainClass>
+					<!-- 
+						<mainClass>com.croeder.uima_sample.ConceptMapperUimaFitPipeline</mainClass>
+					 -->
+					<!-- <mainClass>com.croeder.uima_sample.ConceptMapperPipeline</mainClass> -->
+					<!-- 
+					-->
+						<mainClass>com.croeder.uima_sample.ConceptMapperUCDenverPipeline</mainClass> 
 					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/medline/pubmed_batches/batch_pubmed_005533/  -Ddictionary=cmDict-GO.xml-->
 
 	                <arguments>
@@ -161,6 +167,7 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>1.2</version>
                     <executions>
+
                         <execution>
                             <id>run-jcasgen</id>
                             <phase>process-resources</phase>
@@ -176,10 +183,12 @@
                                 </arguments>
                             </configuration>
                         </execution>
+
                         <!-- <execution> <id>export-descriptor-xml</id> <phase>prepare-package</phase>
                             <goals> <goal>java</goal> </goals> <configuration> <mainClass>edu.ucdenver.ccp.nlp.core.uima.build.XmlDescriptorWriter</mainClass>
                             <arguments> <argument>${project.basedir}/src/main/java</argument> <argument>${project.build.directory}/uima-descriptors</argument>
                             <argument>${project.version}</argument> </arguments> </configuration> </execution> -->
+
                     </executions>
             </plugin>
   			<plugin><!-- This plugin adds the jcasgen generated source code folder
