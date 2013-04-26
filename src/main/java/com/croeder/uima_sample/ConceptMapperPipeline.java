@@ -50,7 +50,6 @@ import org.uimafit.component.xwriter.XWriter;
 import uima.tt.TokenAnnotation;
 
 import edu.ucdenver.ccp.nlp.ext.uima.types.Sentence;
-import edu.ucdenver.ccp.nlp.core.uima.annotation.CCPTextAnnotation;
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.ExplicitSentenceCasInserter;
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.LingPipeSentenceDetector_AE;
 
@@ -58,7 +57,7 @@ import org.xml.sax.SAXException;
 
 
 
-public class ConceptMapperUCDenverPipeline  {
+public class ConceptMapperPipeline  {
 
 	private static Logger logger = Logger.getLogger(BaseUimaFitPipeline.class);
 
@@ -67,7 +66,6 @@ public class ConceptMapperUCDenverPipeline  {
 
 		// the train of type-system pain.....
 		//"edu.ucdenver.ccp.nlp.ext.uima.types.Sentence",
-		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.CCPSentenceAnnotation",
 		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.TypeSystem",
 		//"edu.ucdenver.ccp.nlp.core.uima.TypeSystem",
 		"edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.TypeSystem",
@@ -81,7 +79,7 @@ public class ConceptMapperUCDenverPipeline  {
   	private static final String PARAM_TOKENIZERDESCRIPTOR = "TokenizerDescriptorPath";
 
 
-	ConceptMapperUCDenverPipeline() {
+	ConceptMapperPipeline() {
         tsd = TypeSystemDescriptionFactory.createTypeSystemDescription(typeSystemStrs);
     }
 

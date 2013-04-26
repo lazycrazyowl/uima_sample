@@ -38,7 +38,7 @@ import org.uimafit.pipeline.JCasIterable;
 
 
 public class MedlineLineProteinExtractionPipeline  {
-
+/***
 	private static Logger logger = Logger.getLogger(MedlineLineProteinExtractionPipeline.class);
 
 	protected static final String[] typeSystemStrs = {
@@ -183,5 +183,5 @@ public class MedlineLineProteinExtractionPipeline  {
 			System.exit(3);
 		}
 	}
-
+**/
 }
