@@ -49,19 +49,18 @@ import uima.tt.TokenAnnotation;
 
 //import org.cleartk.token.type.Sentence;
 //import org.cleartk.syntax.opennlp.SentenceAnnotator;
-
+/*
 import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperAggregateFactory;
 import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperFactory;
 import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.tokenizer.OffsetTokenizerFactory;
-
-
-// WTF?!!
-import edu.ucdenver.ccp.nlp.ext.uima.types.Sentence;
-
-
 import edu.ucdenver.ccp.nlp.core.uima.annotation.CCPTextAnnotation;
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.ExplicitSentenceCasInserter;
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.LingPipeSentenceDetector_AE;
+*/
+
+//import edu.ucdenver.ccp.nlp.ext.uima.types.Sentence;
+
+
 
 
 import org.apache.uima.cas.impl.XmiCasSerializer;
@@ -70,7 +69,7 @@ import org.uimafit.factory.JCasFactory;
 import org.xml.sax.SAXException;
 
 public class ConceptMapperUCDenverPipeline  {
-
+/*
 	private static Logger logger = Logger.getLogger(BaseUimaFitPipeline.class);
 
 	protected static final String[] typeSystemStrs = {
@@ -138,11 +137,8 @@ public class ConceptMapperUCDenverPipeline  {
 
 
 
-		/**
 		// Dict Term Reporter 
-        descriptions.add(AnalysisEngineFactory.createPrimitiveDescription(
-			DictTermReporter.class));
-		**/
+        //descriptions.add(AnalysisEngineFactory.createPrimitiveDescription( DictTermReporter.class));
 
 		return engines;
 	}
@@ -217,5 +213,5 @@ public class ConceptMapperUCDenverPipeline  {
 			System.exit(3);
 		}
 	}
-
+*/
 }
