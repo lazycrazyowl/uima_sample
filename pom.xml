@@ -25,7 +25,7 @@
         <snapshotRepository>
             <id>amc-bakeoff.ucdenver.pvt</id>
             <name>amc-bakeoff.ucdenver.pvt</name>
-            <url>http://amc-bakeoff.ucdenver.pvt:8081/artifactory/libs-snapshot-local</url>
+            <url>http://54.225.110.188:8081/artifactory/libs-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
 
