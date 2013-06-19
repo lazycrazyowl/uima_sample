@@ -57,13 +57,12 @@
             <artifactId>cleartk-opennlp-tools</artifactId>
             <version>0.10.2</version>
         </dependency>
+<!-- ====================       -->
 
-<!--        -->
-		<!--
 		<dependency>
             <groupId>edu.ucdenver.ccp</groupId>
-            <artifactId>ccp-nlp-wrapper-conceptmapper</artifactId>
-            <version>3.3-SNAPSHOT</version>
+            <artifactId>common</artifactId>
+            <version>1.4-SNAPSHOT</version>
         </dependency>
 		<dependency>
             <groupId>edu.ucdenver.ccp</groupId>
@@ -80,7 +79,6 @@
             <artifactId>ccp-nlp-ext-uima-syntax</artifactId>
             <version>3.0-SNAPSHOT</version>
         </dependency>
-		-->
 <!--        -->
         <dependency>
             <groupId>junit</groupId>
@@ -144,12 +142,11 @@
 					<!--<mainClass>com.croeder.uima_sample.ProteinPipeline</mainClass>-->
 					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/medline/pubmed_batches/batch_pubmed_005533/ -->
 
-					<!-- 
-						<mainClass>com.croeder.uima_sample.ConceptMapperUimaFitPipeline</mainClass>
-					 -->
+					<!-- <mainClass>com.croeder.uima_sample.ConceptMapperUimaFitPipeline</mainClass> -->
 					<!-- <mainClass>com.croeder.uima_sample.ConceptMapperPipeline</mainClass> -->
 					<!-- 
 					-->
+
 						<mainClass>com.croeder.uima_sample.ConceptMapperUCDenverPipeline</mainClass> 
 					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/medline/pubmed_batches/batch_pubmed_005533/  -Ddictionary=cmDict-GO.xml-->
 

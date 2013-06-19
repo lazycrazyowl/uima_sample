@@ -48,23 +48,19 @@ import org.uimafit.component.xwriter.CASDumpWriter;
 import org.uimafit.component.xwriter.XWriter;
 
 import uima.tt.TokenAnnotation;
-/*
 import edu.ucdenver.ccp.nlp.ext.uima.types.Sentence;
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.ExplicitSentenceCasInserter;
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.LingPipeSentenceDetector_AE;
-*/
 import org.xml.sax.SAXException;
 
 
 
 public class ConceptMapperPipeline  {
-/*
 	private static Logger logger = Logger.getLogger(BaseUimaFitPipeline.class);
 
 	protected static final String[] typeSystemStrs = {
  		"analysis_engine.primitive.DictTerm",
 
-		// the train of type-system pain.....
 		//"edu.ucdenver.ccp.nlp.ext.uima.types.Sentence",
 		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.TypeSystem",
 		//"edu.ucdenver.ccp.nlp.core.uima.TypeSystem",
@@ -200,5 +196,4 @@ public class ConceptMapperPipeline  {
 			System.exit(3);
 		}
 	}
-*/
 }

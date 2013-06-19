@@ -54,9 +54,9 @@ import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperAggregateFactory;
 import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperFactory;
 import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.tokenizer.OffsetTokenizerFactory;
 import edu.ucdenver.ccp.nlp.core.uima.annotation.CCPTextAnnotation;
+*/
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.ExplicitSentenceCasInserter;
 import edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.LingPipeSentenceDetector_AE;
-*/
 
 //import edu.ucdenver.ccp.nlp.ext.uima.types.Sentence;
 
@@ -69,13 +69,11 @@ import org.uimafit.factory.JCasFactory;
 import org.xml.sax.SAXException;
 
 public class ConceptMapperUCDenverPipeline  {
-/*
 	private static Logger logger = Logger.getLogger(BaseUimaFitPipeline.class);
 
 	protected static final String[] typeSystemStrs = {
  		"analysis_engine.primitive.DictTerm",
 
-		// the train of type-system pain.....
 		//"org.cleartk.token.type.Sentence",
 		//"edu.ucdenver.ccp.nlp.ext.uima.types.Sentence",
 		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.CCPSentenceAnnotation",
@@ -213,5 +211,4 @@ public class ConceptMapperUCDenverPipeline  {
 			System.exit(3);
 		}
 	}
-*/
 }

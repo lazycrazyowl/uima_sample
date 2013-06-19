@@ -27,10 +27,19 @@ Chris Roeder, Nov. 2012
 * ParameterExamplePipeline.java (TBD)
 	We need a subtle modification to show parameters uimaFIT-style.
 
-* ConceptMapperPipeline.java (TBD)
+* ConceptMapperPipeline.java 
 	This set includes work from a number of people showing how to create a ConceptMapper
 	Dictionary from an OBO file, then run CM in a pipeline to create RDF output.
+	It uses xml files to describe the UIMA Analysis Engines.
 	ConceptMapper
 	RdfCasConsumer
 	RdfGenerator
 	OboDictionaryCreator
+
+* ConceptMapperUIMAFitPipeline.java 
+	This is an aborted attempt at creating a ConceptMapper AE from uimaFIT
+    calls without the use of xml files or the ConceptMapperAggregateFactory
+    used elsewhere. Sources of Difficulties include that base class of 
+    ConceptMapper. It's the stock JCasAnnotator_ImplBase, not the uimaFIT
+    one. There are subtle ways around that however. The uimaFIT parameter
+    initialization can be called directly. (TBc)

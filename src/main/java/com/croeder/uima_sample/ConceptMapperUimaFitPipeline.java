@@ -52,7 +52,7 @@ import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperFactory;
 import edu.ucdenver.ccp.nlp.wrapper.conceptmapper.tokenizer.OffsetTokenizerFactory;
 
 
-// WTF?!!
+// from shims, outside of CCPTextAnnotation
 import edu.ucdenver.ccp.nlp.ext.uima.types.Sentence;
 
 
@@ -69,9 +69,8 @@ public class ConceptMapperUimaFitPipeline  {
 	protected static final String[] typeSystemStrs = {
  		"analysis_engine.primitive.DictTerm",
 
-		// the train of type-system pain.....
 		//"org.cleartk.token.type.Sentence",
-		//"edu.ucdenver.ccp.nlp.ext.uima.types.Sentence",
+		"edu.ucdenver.ccp.nlp.ext.uima.types.Sentence",
 		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.CCPSentenceAnnotation",
 		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.TypeSystem",
 		"edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.TypeSystem",
