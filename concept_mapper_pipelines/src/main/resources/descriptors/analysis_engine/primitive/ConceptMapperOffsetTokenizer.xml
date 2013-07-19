@@ -440,7 +440,7 @@
 		<typePriorities>
 			<priorityList>
 				<!-- <type>uima.tt.SentenceAnnotation</type> -->
-				 <type>uima.tt.SentenceAnnotation</type> 
+				 <type>com.croeder.uima_sample.annotation.SentenceAnnotation</type> 
 				<type>uima.tt.TokenAnnotation</type>
 			</priorityList>
 		</typePriorities>

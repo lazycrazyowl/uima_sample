@@ -3,6 +3,7 @@ package com.croeder.uima_sample.analysis_engines;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.junit.Assert;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.FSIterator;
@@ -26,6 +27,8 @@ public class LingPipeSentenceDetectorAeTest  extends AnalysisEngineTest {
 		FSIterator iter = jCas.getJFSIndexRepository().getAnnotationIndex(SentenceAnnotation.type).iterator();
 		while (iter.hasNext()) {
 			SentenceAnnotation sentence = (SentenceAnnotation) iter.next();
+			Assert.assertTrue(    (sentence.getStart() == 01 && sentence.getEnd() == 57)
+						|| (sentence.getStart() == 58 && sentence.getEnd() == 118 ));
 		}
 
 	}
@@ -41,8 +44,11 @@ public class LingPipeSentenceDetectorAeTest  extends AnalysisEngineTest {
 			 //555555555666666666677777777778888888888999999999900000000001111111111
 
 		jCas.setDocumentText(documentText);
+
+		/*
 		SentenceAnnotation  sa;
 		sa = new SentenceAnnotation(jCas, 01,57); sa.addToIndexes();
 		sa = new SentenceAnnotation(jCas, 58,118); sa.addToIndexes();
+		*/
 	}
 }
