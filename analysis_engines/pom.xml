@@ -11,6 +11,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jcasgen.typesystem>com/croeder/uima_sample/TypeSystem.xml</jcasgen.typesystem>
+        <jcasgen.conceptmapper.typesystem>com/croeder/uima_sample/ConceptMapperSupplementTypeSystem.xml</jcasgen.conceptmapper.typesystem>
     </properties>
 
 	<developers>
@@ -179,8 +180,21 @@
                             <configuration>
                                 <mainClass>org.uimafit.util.JCasGenPomFriendly</mainClass>
                                 <arguments>
-                                    <argument>file:${project.basedir}/src/main/resources/${jcasgen.typesystem}
-                                    </argument>
+                                    <argument>file:${project.basedir}/src/main/resources/${jcasgen.typesystem} </argument>
+                                    <argument>${project.build.directory}/generated-sources/jcasgen</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>run-jcasgen-2</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>java</goal>
+                            </goals>
+                            <configuration>
+                                <mainClass>org.uimafit.util.JCasGenPomFriendly</mainClass>
+                                <arguments>
+                                    <argument>file:${project.basedir}/src/main/resources/${jcasgen.conceptmapper.typesystem} </argument>
                                     <argument>${project.build.directory}/generated-sources/jcasgen</argument>
                                 </arguments>
                             </configuration>

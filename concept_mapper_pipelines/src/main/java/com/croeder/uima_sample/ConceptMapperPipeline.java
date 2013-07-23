@@ -50,6 +50,7 @@ import org.uimafit.component.xwriter.XWriter;
 import uima.tt.TokenAnnotation;
 
 import com.croeder.uima_sample.analysis_engines.LingPipeSentenceDetector_AE;
+import com.croeder.uima_sample.analysis_engines.Debug_AE;
 
 import org.xml.sax.SAXException;
 
@@ -60,16 +61,8 @@ public class ConceptMapperPipeline  {
 
 	protected static final String[] typeSystemStrs = {
  		"analysis_engine.primitive.DictTerm",
-
-		////uima.tt.SentenceAnnotation
-		//"edu.ucdenver.ccp.nlp.ext.uima.types.Sentence",
-		//"edu.ucdenver.ccp.nlp.ext.uima.annotation.syntax.TypeSystem",
-		//"edu.ucdenver.ccp.nlp.core.uima.TypeSystem",
-		//"edu.ucdenver.ccp.nlp.ext.uima.annotators.sentencedetectors.TypeSystem",
-		//"edu.ucdenver.ccp.nlp.core.uima.TypeSystem",
-
+		"com.croeder.uima_sample.ConceptMapperSupplementTypeSystem",
 		"com.croeder.uima_sample.TypeSystem",
-
 		"org.apache.uima.conceptMapper.support.tokenizer.TokenAnnotation",
 		"org.apache.uima.examples.SourceDocumentInformation"
 	};
@@ -119,16 +112,8 @@ public class ConceptMapperPipeline  {
 		engines.add(conceptMapperAE);
 
 
-		// CAS Dumper
-        AnalysisEngineDescription aeD =  AnalysisEngineFactory.createPrimitiveDescription(
-            CASDumpWriter.class,
-            CASDumpWriter.PARAM_OUTPUT_FILE, "cm_output.txt");
-		engines.add(UIMAFramework.produceAnalysisEngine(aeD));
-
-
-
-		// Dict Term Reporter 
-        //descriptions.add(AnalysisEngineFactory.createPrimitiveDescription( DictTermReporter.class));
+        AnalysisEngine debugAe = Debug_AE.createAnalysisEngine(tsd);
+        engines.add(debugAe);
 
 		return engines;
 	}
@@ -152,11 +137,6 @@ public class ConceptMapperPipeline  {
 			FileSystemCollectionReader.PARAM_LENIENT,	"true"
         );
 
-
-        AnalysisEngine xWriter = AnalysisEngineFactory.createPrimitive(XWriter.class, tsd,
-                XWriter.PARAM_OUTPUT_DIRECTORY_NAME, "./");
-	
-		aeList.add(xWriter);
 
 		SimplePipeline.runPipeline(reader, aeList.toArray(new AnalysisEngine[0]));
     }

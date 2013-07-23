@@ -32,10 +32,9 @@ import com.aliasi.sentences.SentenceModel;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.aliasi.tokenizer.TokenizerFactory;
 
-import com.croeder.uima_sample.annotation.TextAnnotation;
+import com.croeder.uima_sample.annotation.SentenceAnnotation;
 import com.croeder.uima_sample.annotation.AnnotationSet;
 import com.croeder.uima_sample.annotation.Annotator;
-import com.croeder.uima_sample.annotation_extensions.AnnotatorX;
 
 
 
@@ -46,7 +45,6 @@ public class LingPipeSentenceDetector_AE  extends JCasAnnotator_ImplBase {
 		= new SentenceChunker(
 			new IndoEuropeanTokenizerFactory(),
 			new MedlineSentenceModel());
-	// TODO put 22 into an enum or properties file
 
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -55,27 +53,28 @@ public class LingPipeSentenceDetector_AE  extends JCasAnnotator_ImplBase {
 
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException {
-		AnnotatorX annotator = new AnnotatorX(jCas, new Integer(22), "", "LingPipe", "Alias-i");
+		// TODO put 22 into an enum or properties file
+		Annotator annotator = new Annotator(jCas);
+		annotator.setAnnotatorID(22);
+		annotator.setFirstName("UCDenver-CCP");
+		annotator.setLastName("LingPipe");
+		annotator.setAffiliation("Alias-i");
 		String documentText = jCas.getDocumentText();
 
 		// GET SENTENCES
-		int charOffset = 0;
 		Chunking chunking = sentenceChunker.chunk(documentText.toCharArray(), 0, documentText.length());
 		Set<Chunk> chunks = chunking.chunkSet();
 
 
 		// CREATE ANNOTATIONS
-		Collection<TextAnnotation> annotations = new ArrayList<TextAnnotation>();
+		Collection<SentenceAnnotation> annotations = new ArrayList<SentenceAnnotation>();
 		for (Chunk chunk : chunks) {
 			int start = chunk.start();
 			int end = chunk.end();
 
-			TextAnnotation ta = new TextAnnotation(jCas, start + charOffset, end + charOffset);
-			ta.setAnnotator(annotator);
-
-			charOffset = charOffset + end - start + 1;
-
-			ta.addToIndexes();
+			SentenceAnnotation sa = new SentenceAnnotation(jCas, start, end);
+			sa.setAnnotator(annotator);
+			sa.addToIndexes();
 		}
 
 	}		

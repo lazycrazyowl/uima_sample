@@ -17,6 +17,8 @@ import com.croeder.uima_sample.analysis_engines.LingPipeSentenceDetector_AE;
 
 public class LingPipeSentenceDetectorAeTest  extends AnalysisEngineTest {
 
+	final int sentenceSpans[][] = { {0, 34}, {35, 63}, {64, 106} };
+
 	@Test
 	public void test()
 	throws ResourceInitializationException, UIMAException, IOException {
@@ -25,23 +27,25 @@ public class LingPipeSentenceDetectorAeTest  extends AnalysisEngineTest {
 		SimplePipeline.runPipeline(jCas, aed);
 
 		FSIterator iter = jCas.getJFSIndexRepository().getAnnotationIndex(SentenceAnnotation.type).iterator();
+
+		int num=0;
 		while (iter.hasNext()) {
 			SentenceAnnotation sentence = (SentenceAnnotation) iter.next();
-			Assert.assertTrue(    (sentence.getStart() == 01 && sentence.getEnd() == 57)
-						|| (sentence.getStart() == 58 && sentence.getEnd() == 118 ));
+			System.out.println("\"" + sentence.getCoveredText() + "\"");
+			Assert.assertEquals(sentenceSpans[num][0] , sentence.getStart());
+			Assert.assertEquals(sentenceSpans[num][1] , sentence.getEnd());
+			num++;
 		}
+		Assert.assertEquals(3, num);
 
 	}
 
 	protected void addJcasData() 
 	throws UIMAException, IOException {
 		String documentText  
-			 //12345678901234567890123456789012345678901234567890
-			 //00000000011111111112222222222333333333344444444445
-		    = "Lorem ipsum dolor sit amet, consectetur adipiscing"
-			+ " elit. Vivamus volutpat ut dui ut pretium. Praesent non quam massa. ";
-			 //123456789012345678901234567890123456789012345678901234567890123456789
-			 //555555555666666666677777777778888888888999999999900000000001111111111
+		    = "This is a proper English Sentence. Another sentence follows it. One more sentence makes it not too simple.";
+			 //012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+			 //000000000011111111112222222222333333333344444444445555555555666666666677777777778888888888999999999900000000001111111111
 
 		jCas.setDocumentText(documentText);
 

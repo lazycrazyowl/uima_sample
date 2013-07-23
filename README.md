@@ -7,6 +7,17 @@ http://sourceforge.net/projects/bionlp-uima/files/ccp-nlp/v3.1/
 
 Chris Roeder, Nov. 2012
 
+* analysis_engines
+	** AnalysisEngineTest.java
+	** Debug_AE.java
+	** LingPipeSentenceDetector_AE.java
+	** LingPipeSentenceDetectorAeTest.java
+	** ClassMentionX.java
+		An extension of the generated ClassMention class with a static function
+		that might have been a member of ClassMention or ClassMentionX if it
+		weren't for the fact you can't do type conversion as easily in Java
+		or that UIMA is in control of what objects get created in the JCas.
+
 * concept_mapper_pipelines
 
 	** GetStartedQuickAE.java
@@ -33,18 +44,6 @@ Chris Roeder, Nov. 2012
 		This set includes work from a number of people showing how to create a ConceptMapper
 		Dictionary from an OBO file, then run CM in a pipeline to create RDF output.
 		It uses xml files to describe the UIMA Analysis Engines.
-		ConceptMapper
-		RdfCasConsumer
-		RdfGenerator
-		OboDictionaryCreator
-
-	** ConceptMapperUIMAFitPipeline.java 
-		This is an aborted attempt at creating a ConceptMapper AE from uimaFIT
-	    calls without the use of xml files or the ConceptMapperAggregateFactory
-	    used elsewhere. Sources of Difficulties include that base class of 
-	    ConceptMapper. It's the stock JCasAnnotator_ImplBase, not the uimaFIT
-	    one. There are subtle ways around that however. The uimaFIT parameter
-	    initialization can be called directly. (TBc)
 		See: https://groups.google.com/forum/?fromgroups#!topic/uimafit-users/BiCdfJrwGBE
 
 * lucene_pipelines

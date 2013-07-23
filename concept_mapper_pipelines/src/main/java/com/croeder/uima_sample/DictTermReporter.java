@@ -1,7 +1,6 @@
 // Copyright 2012, Chris Roeder 
 package com.croeder.uima_sample;
 
-import static org.uimafit.util.JCasUtil.select;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +20,7 @@ import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.JCasFactory;
+import org.uimafit.util.JCasUtil;
 
 import org.apache.uima.conceptMapper.DictTerm;
 import org.apache.uima.examples.SourceDocumentInformation;
@@ -34,11 +34,11 @@ public class DictTermReporter extends JCasAnnotator_ImplBase {
 
 	public void process(JCas jCas) {
 
-		for (SourceDocumentInformation doc : select(jCas, SourceDocumentInformation.class)) {
+		for (SourceDocumentInformation doc : JCasUtil.select(jCas, SourceDocumentInformation.class)) {
 			System.out.println("" + doc.getDocumentSize() + doc.getUri());
         }
 
-		for (DictTerm term : select(jCas, DictTerm.class)) {
+		for (DictTerm term : JCasUtil.select(jCas, DictTerm.class)) {
 			System.out.println(term.getMatchedText() + ", " + term.getDictCanon());
         }
 	

@@ -284,6 +284,7 @@
 				<value>
 					<array>
 						<string>canonical</string>
+						<string>id</string>
 					</array>
 				</value>
 			</nameValuePair>
@@ -292,6 +293,7 @@
 				<value>
 					<array>
 						<string>DictCanon</string>
+						<string>id</string>
 					</array>
 				</value>
 			</nameValuePair>
@@ -304,8 +306,9 @@
 			<nameValuePair>
 				<name>ResultingAnnotationName</name>
 				<value>
+						<!--org.apache.uima.conceptMapper.DictTerm-->
 					<string>
-						org.apache.uima.conceptMapper.DictTerm
+						com.croeder.uima_sample.annotation.IdDictTerm
 					</string>
 				</value>
 			</nameValuePair>
