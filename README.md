@@ -50,3 +50,7 @@ Chris Roeder, Nov. 2012
 * lucene_pipelines
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/51326b276ac97a08eefd1f7b010eea0e "githalytics.com")](http://githalytics.com/croeder/uima_sample)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/croeder/uima_sample/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
