@@ -276,7 +276,8 @@
 			<nameValuePair>
 				<name>caseMatch</name>
 				<value>
-					<string>ignoreall</string>
+					<!--<string>ignoreall</string>-->
+					<string>sensitive</string>
 				</value>
 			</nameValuePair>
 			<nameValuePair>

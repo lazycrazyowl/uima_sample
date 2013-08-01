@@ -99,15 +99,24 @@ public class  JCasExtractor {
 	public Collection<Result> extract(JCas jcas) {
 
 		List<Result> resultsList = new ArrayList<Result>();
+		String doc = jcas.getDocumentText();
         FSIterator<Annotation> annotIter = jcas.getJFSIndexRepository().getAnnotationIndex().iterator();
         while (annotIter.hasNext()) {
 	        Annotation annot = (Annotation) annotIter.next();
 			if (annot instanceof IdDictTerm) {
+				Result result = new Result("dictTerm for \"" + annot.getCoveredText() + "\"");
+
                 IdDictTerm dt = (IdDictTerm) annot;
-				Result result = new Result("dictTerm");
 				result.add("id", dt.getId());						
 				result.add("canonical", dt.getDictCanon());						
-				result.add("text", dt.getMatchedText());						
+				// from ConceptMapper (returns null)
+				//result.add("text", dt.getMatchedText());						
+
+				result.add("begin", "" + annot.getBegin() );						
+				result.add("end", "" + annot.getEnd());						
+				// calculated, should match text
+				result.add("covered", doc.substring(annot.getBegin(), annot.getEnd()));
+
 				resultsList.add(result);
             }
 		}

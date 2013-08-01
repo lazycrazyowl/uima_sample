@@ -99,14 +99,8 @@ public class Pipeline {
 					logger.error("FILE FAILURE to process cas, moving to next.  doc count:" + docCount);
 				}
 				if (extractor != null) {
-					System.out.println("xxxxxxxxxxx non-null extractor");
 					Collection<JCasExtractor.Result> docResults = extractor.extract(jcas);
-					System.out.println("xxxxxxxxxxx doc " + docResults.size());
 					results.addAll(docResults);
-					System.out.println("xxxxxxxxxxx cumulative " + results.size());
-				}
-				else {
-					System.out.println("xxxxxxxxxxx no extractor");
 				}
 				jcas.reset();
 				docCount++;

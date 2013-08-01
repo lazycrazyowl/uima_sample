@@ -5,6 +5,11 @@ package com.croeder.uima_sample;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,44 +61,60 @@ import com.croeder.uima_sample.analysis_engines.Debug_AE;
 import org.xml.sax.SAXException;
 
 
+/**
+ * modifies the base ConceptMapper pipeline so it doesn't read a
+ * directory with a collection reader, rather it works with a 
+ * document passed in as a string.
+ * It passes in a bogus directory to the CR initialized in the
+ * base class, then doesn't call runPipeline (which would call the CR)
+ * and instead calls runServicePipeline on the string.
+ * 
+ * TODO: factor out the runPipeline method and separate creating the pipeline from running it
+ * or feeding it input.
+ */
+public class ConceptMapperServicePipeline extends ConceptMapperPipeline  {
 
-public class ConceptMapperPipeline extends Pipeline  {
+	private static Logger logger = Logger.getLogger(ConceptMapperServicePipeline.class);
 
-	private static Logger logger = Logger.getLogger(ConceptMapperPipeline.class);
-
-	ConceptMapperPipeline(File dir) throws UIMAException, IOException {
-		super(dir, new JCasExtractor());
-
-        // SENTENCE DETECTOR 
-        AnalysisEngineDescription sentenceDetectorDesc
-           = LingPipeSentenceDetector_AE.createAnalysisEngineDescription(tsd);
-		//engines.add(UIMAFramework.produceAnalysisEngine(sentenceDetectorDesc));
-		engineDescs.add(sentenceDetectorDesc);
-
-
-		// TOKENIZER from xml files ** THE PATH MUST BE A FILE SYSTEM PATH **
-		Object[] config = new Object[0];
-  		ResourceSpecifier tokenizerDesc 
-			= ResourceCreationSpecifierFactory.createResourceCreationSpecifier(
-				"target/classes/descriptors/analysis_engine/primitive/OffsetTokenizer.xml", config);
-		engineDescs.add(tokenizerDesc);
-
-
-		// CONCEPT MAPPER from xml files ** ...FILE SYSTEM PATH **
-		// The dictionary is specified, in this case, in the xml file.
-  		ResourceSpecifier conceptMapperDesc 
-			= ResourceCreationSpecifierFactory.createResourceCreationSpecifier(
-				"target/classes/descriptors/analysis_engine/primitive/ConceptMapperOffsetTokenizer.xml", config);
-		engineDescs.add(conceptMapperDesc);
-
-
-        AnalysisEngineDescription debugDesc = Debug_AE.createAnalysisEngineDescription(tsd);
-        engineDescs.add(debugDesc);
+	ConceptMapperServicePipeline() throws UIMAException, IOException {
+		super(new File("/")); // must exist, but won't be used (TODO: that's gross)
 	}
+	
+ 	public Collection<JCasExtractor.Result> runServicePipeline(String document) 
+	throws UIMAException, IOException {
+
+        Collection<JCasExtractor.Result> results =  new ArrayList<JCasExtractor.Result>();
+        final AnalysisEngineDescription aaeDesc
+            = AnalysisEngineFactory.createAggregateDescription(
+                engineDescs.toArray(new AnalysisEngineDescription[0]));
+        final AnalysisEngine aae
+            = AnalysisEngineFactory.createAggregate(aaeDesc);
+
+		JCas jcas = JCasFactory.createJCas(tsd);
+		jcas.setDocumentText(document);
+
+        try {
+        	aae.process(jcas);
+            if (extractor != null) {
+                Collection<JCasExtractor.Result> docResults = extractor.extract(jcas);
+                results.addAll(docResults);
+            }
+            jcas.reset();
+            aae.collectionProcessComplete();
+
+            return results;
+        }
+        finally {
+            aae.destroy();
+            reader.close();
+            reader.destroy();
+        }
+    }
+
 
 
 	protected static void usage() {
-	 	System.out.println("mvn exec:java -Dinput=<input tree> ");
+	 	System.out.println("mvn exec:java  ");
 	}
 
 
@@ -104,9 +125,9 @@ public class ConceptMapperPipeline extends Pipeline  {
 			System.exit(1);
 		}
 
-		File inputDir = null;
+		File inputFile = null;
 		try {
-			inputDir = new File(args[0]);
+			inputFile = new File(args[0]);
 		} 
 		catch(Exception x) {
 			System.out.println("error:" + x);
@@ -115,13 +136,20 @@ public class ConceptMapperPipeline extends Pipeline  {
 			System.exit(2);
 		}
 		try {
-			ConceptMapperPipeline pipeline = new ConceptMapperPipeline(inputDir);
+		
+			StringBuilder docString = new StringBuilder();
+            InputStreamReader isr = new InputStreamReader(new FileInputStream(inputFile), StandardCharsets.UTF_8);
+			BufferedReader br = new BufferedReader(isr);
+			while (br.ready()) {
+				docString.append(br.readLine());
+			}
+
+			ConceptMapperServicePipeline pipeline = new ConceptMapperServicePipeline();
 	
 			BasicConfigurator.configure();
 	
-			System.out.println("going with "
-				+ " inputDir:" + inputDir);	
-			Collection<JCasExtractor.Result> results = pipeline.runPipeline();
+			System.out.println("going with " + " inputFile:" + inputFile);	
+			Collection<JCasExtractor.Result> results = pipeline.runServicePipeline(docString.toString());
 
 			for (JCasExtractor.Result result : results) {
 				System.out.println(result.getName());

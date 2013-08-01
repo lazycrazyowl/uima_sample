@@ -78,13 +78,16 @@ public class Debug_AE extends JCasAnnotator_ImplBase {
 
 	        Annotation annot = (Annotation) annotIter.next();
 			if (annot instanceof TokenAnnotation) {
-				System.out.println("SEMANTIC token: \"" + annot.getCoveredText() + "\"");
+				System.out.println("SEMANTIC token: " + annot.getBegin() + ", " + annot.getEnd() + " \"" + annot.getCoveredText() + "\"");
 			}
 			if (annot instanceof IdDictTerm) {
 				IdDictTerm dt = (IdDictTerm) annot;
-				System.out.println("SEMANTIC dictTerm (ConceptMapper): \"" + dt.getDictCanon() + "\"" 
-					+ "\"" + dt.getMatchedText() + "\"" 
-					+ "\"" + dt.getId() + "\"");
+				System.out.println("SEMANTIC dictTerm (ConceptMapper):\"" 
+					+ " canon:" + dt.getDictCanon() + "\"" 
+					+ " (" + annot.getBegin() + ", " + annot.getEnd() + ")"
+					+ " covered:  \"" + annot.getCoveredText() + "\""
+					+ " matched: \"" + dt.getMatchedText() + "\"" 
+					+ " id: \"" + dt.getId() + "\"");
 			}
 			else if (annot instanceof TextAnnotation) {
 	
