@@ -53,6 +53,20 @@ import com.croeder.uima_sample.mention.ComplexSlotMention;
  * This is not an AnalysisEngine, though it reads a CAS and extracts
  * information from it, returning a Collection of Results.
  * Only deals with String slots for now..
+ * 
+ * The Simple Rest Server from the UIMA Sandbox does something similar.
+ * The problem with AE's is that  you only have a reference to a descriptor,
+ * not the actual AE. So, if you want to return data from the, you don't
+ * have a handle to it to use to call a function on it, and there's 
+ * no way through the descriptor. This extractor depends on 
+ * a local pipeline execution engine that allows for CAS (JCAS) access.
+ * Once you have that, you can pass a JCAS to an extractor and get
+ * the data this whole exercise is about.
+ *
+ * Of course, an alternative is to write a file, and in many
+ * batch oriented UIMA pipelines, we use a (deprecated) CAS Consumer
+ * or an AE that acts as one to write a file from the CAS passed to it.
+ * The point here is interactive programmatic access.
  */
 public class  JCasExtractor {
 
