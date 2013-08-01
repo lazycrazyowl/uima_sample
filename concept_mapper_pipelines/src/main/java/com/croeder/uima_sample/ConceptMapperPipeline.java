@@ -1,5 +1,5 @@
 // Copyright 2012, Chris Roeder 
-package com.croeder.uima_sample;;
+package com.croeder.uima_sample;
 
 
 import java.io.IOException;
@@ -26,6 +26,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.pear.util.FileUtil;
 import org.apache.uima.resource.ExternalResourceDescription;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.resource.ResourceSpecifier;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.resource.metadata.ResourceMetaData;
 import org.apache.uima.tools.components.FileSystemCollectionReader;
@@ -42,7 +43,7 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.factory.JCasFactory;
-import org.uimafit.pipeline.SimplePipeline;
+import org.uimafit.factory.ResourceCreationSpecifierFactory;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.component.xwriter.CASDumpWriter;
 import org.uimafit.component.xwriter.XWriter;
@@ -56,126 +57,79 @@ import org.xml.sax.SAXException;
 
 
 
-public class ConceptMapperPipeline  {
+public class ConceptMapperPipeline extends Pipeline  {
+
 	private static Logger logger = Logger.getLogger(BaseUimaFitPipeline.class);
 
-	protected static final String[] typeSystemStrs = {
- 		"analysis_engine.primitive.DictTerm",
-		"com.croeder.uima_sample.ConceptMapperSupplementTypeSystem",
-		"com.croeder.uima_sample.TypeSystem",
-		"org.apache.uima.conceptMapper.support.tokenizer.TokenAnnotation",
-		"org.apache.uima.examples.SourceDocumentInformation"
-	};
+	ConceptMapperPipeline(File dir) throws UIMAException, IOException {
+		super(dir, new JCasExtractor());
 
-	protected TypeSystemDescription tsd;
-
-
-	ConceptMapperPipeline() {
-        tsd = TypeSystemDescriptionFactory.createTypeSystemDescription(typeSystemStrs);
-    }
-
-
-	protected List<AnalysisEngine> getPipelineEngines(
-		File dictionaryFile)
-	throws UIMAException, IllegalArgumentException, IOException {
-
-		List<AnalysisEngine> engines = new ArrayList<AnalysisEngine>();
-
-		// OpenNLP Sentence Detector by way of ClearTK
-		// not work because these sentences are derived from uima.tcas.Annotation
-        // instead of org.apache.uima.jcas.tcas.Annotation...
-		//descriptions.add(SentenceAnnotator.getDescription());
-
-
-        // SENTENCE DETECTOR - CCP
-        //AnalysisEngineDescription sentenceDetectorDesc
-        //   = LingPipeSentenceDetector_AE.createAnalysisEngineDescription(tsd, ExplicitSentenceCasInserter.class, true);
-		//engines.add(UIMAFramework.produceAnalysisEngine(sentenceDetectorDesc));
-
-        // SENTENCE DETECTOR - CROEDER
+        // SENTENCE DETECTOR 
         AnalysisEngineDescription sentenceDetectorDesc
            = LingPipeSentenceDetector_AE.createAnalysisEngineDescription(tsd);
-		engines.add(UIMAFramework.produceAnalysisEngine(sentenceDetectorDesc));
+		//engines.add(UIMAFramework.produceAnalysisEngine(sentenceDetectorDesc));
+		engineDescs.add(sentenceDetectorDesc);
 
 
-		Object[] config = new Object[0];;
 		// TOKENIZER from xml files ** THE PATH MUST BE A FILE SYSTEM PATH **
-		AnalysisEngine tokenizerAE = 
-			AnalysisEngineFactory.createAnalysisEngineFromPath(
+		Object[] config = new Object[0];
+  		ResourceSpecifier tokenizerDesc 
+			= ResourceCreationSpecifierFactory.createResourceCreationSpecifier(
 				"target/classes/descriptors/analysis_engine/primitive/OffsetTokenizer.xml", config);
-		engines.add(tokenizerAE);
+		engineDescs.add(tokenizerDesc);
 
-		//CONCEPT MAPPER from xml files ** ...FILE SYSTEM PATH **
-		AnalysisEngine conceptMapperAE = 
-			AnalysisEngineFactory.createAnalysisEngineFromPath(
+
+		// CONCEPT MAPPER from xml files ** ...FILE SYSTEM PATH **
+		// The dictionary is specified, in this case, in the xml file.
+  		ResourceSpecifier conceptMapperDesc 
+			= ResourceCreationSpecifierFactory.createResourceCreationSpecifier(
 				"target/classes/descriptors/analysis_engine/primitive/ConceptMapperOffsetTokenizer.xml", config);
-		engines.add(conceptMapperAE);
+		engineDescs.add(conceptMapperDesc);
 
 
-        AnalysisEngine debugAe = Debug_AE.createAnalysisEngine(tsd);
-        engines.add(debugAe);
-
-		return engines;
+        AnalysisEngineDescription debugDesc = Debug_AE.createAnalysisEngineDescription(tsd);
+        engineDescs.add(debugDesc);
 	}
 
 
-	public void go(File dictionaryFile, File inputDir)
-	throws UIMAException, ResourceInitializationException, FileNotFoundException, IOException {
-
-		List<AnalysisEngine> aeList
-			= getPipelineEngines(dictionaryFile);
-
-
-
-        CollectionReader reader = CollectionReaderFactory.createCollectionReader(
-			FileSystemCollectionReader.class,
-			tsd,
-			FileSystemCollectionReader.PARAM_INPUTDIR,	inputDir,
-			FileSystemCollectionReader.PARAM_ENCODING,	"UTF-8",
-			FileSystemCollectionReader.PARAM_LANGUAGE, 	"English",
-			FileSystemCollectionReader.PARAM_XCAS, 		"false",
-			FileSystemCollectionReader.PARAM_LENIENT,	"true"
-        );
-
-
-		SimplePipeline.runPipeline(reader, aeList.toArray(new AnalysisEngine[0]));
-    }
-
-	
 	protected static void usage() {
-	 	System.out.println("mvn exec:java -Dinput=<input tree> -Ddictionar=<dictionary file>");
-		System.out.println("mvn exec:java -Dinput=/Users/roederc/data/fulltext/pmc/Yeast -Ddictionary=classes/dictionaries/cmDict-APO.xml");
+	 	System.out.println("mvn exec:java -Dinput=<input tree> ");
 	}
 
 
 	public static void main(String[] args) {
 
-		if (args.length < 2) {
+		if (args.length < 1) {
 			usage();
 			System.exit(1);
 		}
 
-			File dictionaryFile  = null;
-			File inputDir = null;
+		File inputDir = null;
 		try {
 			inputDir = new File(args[0]);
-			dictionaryFile  = new File(args[1]);;
-		
-		} catch(Exception x) {
+		} 
+		catch(Exception x) {
 			System.out.println("error:" + x);
 			x.printStackTrace();
 			usage();
 			System.exit(2);
 		}
 		try {
-			ConceptMapperPipeline pipeline = new ConceptMapperPipeline ();
+			ConceptMapperPipeline pipeline = new ConceptMapperPipeline(inputDir);
 	
 			BasicConfigurator.configure();
 	
 			System.out.println("going with "
-				+ " dictionaryFile:" + dictionaryFile
 				+ " inputDir:" + inputDir);	
-			pipeline.go(dictionaryFile,  inputDir);
+			Collection<JCasExtractor.Result> results = pipeline.runPipeline();
+System.out.println("xxxxxxxxxxxxxxxxxxxxx" + results.size());
+
+			for (JCasExtractor.Result result : results) {
+				System.out.println(result.getName());
+				for (String key : result.getKeys()) {
+					System.out.println("    " + key + ", " + result.get(key));
+				}
+			}
 		}
 		catch(Exception x) {
 			System.err.println(x);

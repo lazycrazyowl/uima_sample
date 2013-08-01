@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.StringArray;
 
 import com.croeder.uima_sample.mention.ClassMention;
 import com.croeder.uima_sample.mention.SlotMention;
+import com.croeder.uima_sample.mention.StringSlotMention;
 import com.croeder.uima_sample.mention.PrimitiveSlotMention;
 import com.croeder.uima_sample.mention.ComplexSlotMention;
 
@@ -26,6 +28,9 @@ import com.croeder.uima_sample.mention.ComplexSlotMention;
 // It also has to do with progressive disclosure. Some folks learn
 // UIMA before this API and will code to that before they learn
 // these extensions.
+
+// TODO: consider a full-blown map interface to the class's slots
+
 
 public class ClassMentionX {
 
@@ -73,6 +78,49 @@ public class ClassMentionX {
 		}
 
 		return nameList;
+	}
+
+
+	/**
+	 * Sets a single String value on the named slot, obliterating any
+	 * previously present values, throwing if there was more than one.
+	 * this will also throw if the named slot isn't of type StringSlotMention.
+	 */
+	public void setStringSlotMentionValue(JCas jCas, ClassMention cm, String name, String value) 
+	throws Exception {
+
+		StringSlotMention sm = (StringSlotMention) getPrimitiveSlotMentionByName(cm, name);
+		if (sm == null) {		
+			sm = new StringSlotMention(jCas);
+			sm.setMentionName(name);
+		}
+		else {
+			// TODO: throw if > 1 value here already
+		}
+		StringArray values = new StringArray(jCas, 1);
+		values.set(0,value);
+		sm.setSlotValues(values);
+
+		FSArray slots = cm.getSlotMentions();
+		FSArray newSlots = null;
+		if (slots == null) {
+			newSlots = new FSArray(jCas, 1);
+			newSlots.set(0, sm);
+		}	
+		else {
+			newSlots = new FSArray(jCas, slots.size());
+			for (int i=0; i<slots.size(); i++) {
+				newSlots.set(i, slots.get(i));
+			}
+			// TODO: check for name repeat
+			newSlots.set(slots.size(), sm);
+		}
+		cm.setSlotMentions(newSlots);
+	}
+
+	public String getStringSlotMentionValue(ClassMention cm, String name) {
+		StringSlotMention slot = (StringSlotMention) getSlotMentionByName(cm, name);
+		return slot.getSlotValues(0);
 	}
 
 
