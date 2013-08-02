@@ -47,6 +47,9 @@ Chris Roeder, Nov. 2012
 		See: https://groups.google.com/forum/?fromgroups#!topic/uimafit-users/BiCdfJrwGBE
 
 * lucene_pipelines
+ 
+* web_service
+	** a web_service iniitally surfacing the concept_mapper pipeline
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/51326b276ac97a08eefd1f7b010eea0e "githalytics.com")](http://githalytics.com/croeder/uima_sample)
 
