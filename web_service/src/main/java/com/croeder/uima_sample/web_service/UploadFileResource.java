@@ -1,4 +1,4 @@
-package com.croeder.uima_sample.web_service;
+
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -6,13 +6,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.BufferedReader;
+
+import java.nio.file.Files;
+//import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletResponse;
 //import javax.ws.rs.FormDataParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -20,42 +29,103 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 // pretty much a copy of : http://www.mkyong.com/webservices/jax-rs/file-upload-example-in-jersey/
 
 @Path("file")
 public class UploadFileResource {
-	String errorMessage;
 
-    @POST
-	@Path("/upload")
+	private final File baseDir = new File("/Users/croeder/storage"); // TODO property
+	@GET @Path("/get/{fileid}")
+    @Produces(MediaType.TEXT_PLAIN)
+	public String getFile(@PathParam("fileid") String fileid) {
+System.out.println("GET " + fileid);
+		StringBuilder builder = new StringBuilder();
+		
+		java.nio.file.Path filePath = Paths.get(new File(baseDir, fileid).getAbsolutePath());
+		try {
+			BufferedReader reader = Files.newBufferedReader( filePath, Charset.forName("UTF-8"));
+			while (reader.ready()) {
+				builder.append(reader.readLine());
+			}
+		} catch(Exception e) {}
+System.out.println("GET" + builder.toString());
+		return builder.toString();
+	}
+
+	@GET @Path("/get")
+    @Produces(MediaType.TEXT_PLAIN)
+	public String getFile() {
+		String fileid = "data.txt";
+		StringBuilder builder = new StringBuilder();
+		
+		java.nio.file.Path filePath = Paths.get(new File(baseDir, fileid).getAbsolutePath());
+		try {
+			BufferedReader reader = Files.newBufferedReader( filePath, Charset.forName("UTF-8"));
+			while (reader.ready()) {
+				builder.append(reader.readLine());
+			}
+		} catch(Exception e) {}
+System.out.println("GET" + builder.toString());
+		return builder.toString();
+	}
+
+    @POST @Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail) {
 
-
 		System.out.println("POST UploadFileResource:"); 
 
-		File baseDir = new File("/Users/roederc/storage"); // TODO property
 		File uploadedFile = new File(baseDir, fileDetail.getFileName());
-		int retval = writeToFile(uploadedInputStream, uploadedFile);
+		Pair<Integer, String> statusPair = writeToFile(uploadedInputStream, uploadedFile);
 		int returnCode=0;
-		switch (retval) {
+		switch (statusPair.getLeft()) {
 		case 0:
-			errorMessage="File uploaded to "  + uploadedFile.getAbsolutePath();	
 			returnCode=201;
+			break;
 		case -1:
 			returnCode=500;
+			break;
 		case -2:
 			returnCode=500;
 		}
 
-		return Response.status(returnCode).entity(errorMessage).build();
+		return Response.status(returnCode).entity(statusPair.getRight()).build();
+    }
+
+    @PUT 
+	@Path("/put/{fileid}")
+	@Consumes("application/octet-stream")
+    public Response putFile(
+			@PathParam("fileid") String fileId,
+			InputStream uploadedInputStream) {
+
+		System.out.println("PUT UploadFileResource:" + fileId); 
+
+		File baseDir = new File("/Users/croeder/storage"); // TODO property
+		File uploadedFile = new File(baseDir, fileId);
+		Pair<Integer, String> statusPair = writeToFile(uploadedInputStream, uploadedFile);
+		int httpStatus=0;
+		switch (statusPair.getLeft()) {
+		case 0:
+			httpStatus=201;
+			break;
+		case -1:
+			httpStatus=500;
+			break;
+		case -2:
+			httpStatus=500;
+			break;
+		}
+		return Response.status(httpStatus).entity(statusPair.getRight()).build();
     }
 
 
-	private int writeToFile(InputStream inputStream,
+	private Pair<Integer, String> writeToFile(InputStream inputStream,
 		File uploadedFile) {
 	
 		OutputStream out = null;
@@ -68,16 +138,14 @@ public class UploadFileResource {
 			}
 		}
 		catch (FileNotFoundException x) {
-			System.out.println("error:" + x);
-			errorMessage="Error, coulnd't write to: "  + uploadedFile.getAbsolutePath() + " " + x;	
-			x.printStackTrace();
-			return -1;
+			return new ImmutablePair(-1, 
+				"Error, coulnd't write to: "  
+				+ uploadedFile.getAbsolutePath() 
+				+ " " + x );
 		}
 		catch (IOException x) {
-			System.out.println("error:" + x);
-			errorMessage="Error, unknown IOException:" + x;
-			x.printStackTrace();
-			return -2;
+			return new ImmutablePair(-2, 
+				"Error, unknown IOException:" + x);
 		}
 		finally {
 			try {
@@ -88,8 +156,7 @@ public class UploadFileResource {
 				// eat
 			}
 		}
-		return 0;
+		return new ImmutablePair(0, "success");
 	}
-
 
 }
