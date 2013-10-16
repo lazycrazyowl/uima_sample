@@ -1,5 +1,4 @@
 
-
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -37,7 +36,9 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 @Path("file")
 public class UploadFileResource {
 
-	private final File baseDir = new File("/Users/croeder/storage"); // TODO property
+	private final File baseDir = new File("/Users/roederc/storage"); // TODO property
+
+/*
 	@GET @Path("/get/{fileid}")
     @Produces(MediaType.TEXT_PLAIN)
 	public String getFile(@PathParam("fileid") String fileid) {
@@ -54,10 +55,15 @@ System.out.println("GET " + fileid);
 System.out.println("GET" + builder.toString());
 		return builder.toString();
 	}
+*/
 
-	@GET @Path("/get")
+// No path on a get?
+
+	@GET 
     @Produces(MediaType.TEXT_PLAIN)
 	public String getFile() {
+
+System.out.println("GET " );
 		String fileid = "data.txt";
 		StringBuilder builder = new StringBuilder();
 		
@@ -69,9 +75,11 @@ System.out.println("GET" + builder.toString());
 			}
 		} catch(Exception e) {}
 System.out.println("GET" + builder.toString());
+
 		return builder.toString();
 	}
 
+/*
     @POST @Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(
@@ -96,7 +104,7 @@ System.out.println("GET" + builder.toString());
 
 		return Response.status(returnCode).entity(statusPair.getRight()).build();
     }
-
+*/
     @PUT 
 	@Path("/put/{fileid}")
 	@Consumes("application/octet-stream")
