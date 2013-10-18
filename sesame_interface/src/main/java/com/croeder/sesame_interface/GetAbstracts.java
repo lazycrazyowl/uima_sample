@@ -24,9 +24,9 @@ import org.apache.log4j.Logger;
 
 public class GetAbstracts {
 
-	public final static String bibo  = "<http://purl.org/ontology/bibo/>";
-	public final static String ro    = "<http://www.obofoundry.org/ro/ro.owl#>";
-	public final static String iao   = "<http://purl.obolibrary.org/obo/>";
+	public final static String bibo  = "http://purl.org/ontology/bibo/";
+	public final static String ro    = "http://www.obofoundry.org/ro/ro.owl#";
+	public final static String iao   = "http://purl.obolibrary.org/obo/";
 	public final static String chris = "http://com.croeder/chris/";
 	public final static String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns/";
 
@@ -47,6 +47,7 @@ public class GetAbstracts {
 
 	public void query(String queryString) throws Exception {
 		TupleQuery tq = con.prepareTupleQuery(ql, queryString);
+		tq.setIncludeInferred(true);
 		TupleQueryResult result = tq.evaluate();
 
 		System.out.println("== bindings == ");		
@@ -65,32 +66,38 @@ public class GetAbstracts {
 		result.close();
 	}
 
-	public void createSets() throws Exception{
+
+		//URI uberBatchUri = valueFactory.createURI(chris, "pmid_batch_set");
+		//Statement uberBatchStmt = new StatementImpl(uberBatchUri,  RDF.TYPE, RDF.BAG);
+		//URI counterUri = valueFactory.createURI(RDF.NS.getPrefix(), "_" + i);
+		//Statement  itemStmt = new StatementImpl(batchUri, counterUri, v);
+
+	public void createSets() throws Exception {
+		final int batch_size = 100;
+
 		TupleQuery tq = con.prepareTupleQuery(ql, getPmidsQuery);
 		TupleQueryResult result = tq.evaluate();
 
+		URI hasPartUri = valueFactory.createURI(ro, "has_part");
 		// uberBatch type bag
 		URI uberBatchUri = valueFactory.createURI(chris, "pmid_batch_set");
-		Statement uberBatchStmt = new StatementImpl(uberBatchUri,  RDF.TYPE, RDF.BAG);
-		logger.info("Create UBER:" + uberBatchStmt.toString());
-		con.add(uberBatchStmt);
+		// assign no type
 
-		final int batch_size = 10;
 		URI batchUri = null;
+		int batch_number=0;
 		int i=-1;
-		while (result.hasNext() && ++i < 100 ) {	
+		while (result.hasNext()  ) {	
+			i++;
 			if (i % batch_size == 0) {
-				int batch_number = i / batch_size;
+				batch_number = i / batch_size;
+				logger.info("WTF item: " + i + " batch: " + batch_number);
 
 				// batch  type bag
 				batchUri = valueFactory.createURI(chris, "pmid_batch_" + batch_number);
-				Statement batchStmt = new StatementImpl(batchUri,  RDF.TYPE, RDF.BAG);
-				logger.info("CREATE BATCH: " + batchStmt.toString());
-				con.add(batchStmt);
+				// assign no type`
 
 				// uberBatch contains batch
-				URI batchCounterUri = valueFactory.createURI(rdf, "_" + batch_number);
-				Statement uberContainsStmt = new StatementImpl(uberBatchUri, batchCounterUri, batchUri);
+				Statement uberContainsStmt = new StatementImpl(uberBatchUri, hasPartUri, batchUri);
 				logger.info("UBER CONTAINS: " + uberContainsStmt.toString());
 				con.add(uberContainsStmt);
 			}
@@ -98,18 +105,55 @@ public class GetAbstracts {
 			// batch contains pmid item
 			BindingSet bs = (BindingSet) result.next();
 			Binding b = bs.iterator().next();
-			//URI counterUri = valueFactory.createURI(RDF.NS.getPrefix(), "_" + i);
-			URI counterUri = valueFactory.createURI(rdf, "_" + i);
-			Value v = b.getValue();
-			Statement  itemStmt = new StatementImpl(batchUri, counterUri, v);
-			logger.info("BATCH CONTAINS: " + itemStmt.toString());
+			Statement  itemStmt = new StatementImpl(batchUri, hasPartUri, b.getValue());
+			logger.info("BATCH " + batch_number + "CONTAINS: " + itemStmt.toString());
 			con.add(itemStmt);
 		}
 	}
 
+	public void runQueries() throws Exception {
+			String queryTop = prefixes + "select ?p ?o WHERE { chris:pmid_batch_set ?p ?o .}";
+			logger.info(queryTop);
+			query(queryTop);
 
-// prefix chris: <http://com.croeder/chris/>
-//delete where  {chris:pmid_batch_5 ?p1 ?o1 }
+			//for (int i=0; i<10; i++) {
+			//	String query = prefixes + "select  ?o WHERE { chris:pmid_batch_" + i + " ro:has_part ?o .}";
+			//	logger.info(query);
+			//	query(query);
+			
+
+			String query = prefixes + "select  ?batch ?pmid  WHERE { chris:pmid_batch_set ro:has_part ?batch ."
+									+                              " ?batch ro:has_part ?pmid .}";
+			logger.info(query);
+			query(query);
+
+			// produces other junk:
+			//String query = prefixes +  "select ?o { chris:pmid_batch_1 ?p   ?o}";
+			// don't work:
+			//String query = prefixes +  "select ?o { chris:pmid_batch_1 rdfs:member   ?o}";
+			//String query = prefixes +  "select ?p ?o { chris:pmid_batch_1 ?p   ?o. FILTER (strstarts(str(?prop), str(rdf:_)))}";
+	}
+
+	public void deleteSets() throws Exception {
+		URI hasPartUri = valueFactory.createURI(ro, "has_part");
+		URI topUri = valueFactory.createURI(chris, "pmid_batch_set");
+		Statement  topStmt = new StatementImpl(topUri, hasPartUri, null);
+		logger.info("TOP DELETE: " + topStmt.toString());
+		con.remove(topStmt);
+
+		for (int i=0; i<10; i++) {
+			URI batchUri = valueFactory.createURI(chris, "pmid_batch_" + i);
+			Statement  hasPartStmt = new StatementImpl(batchUri, hasPartUri, null);
+			logger.info("BATCH DELETE: " + hasPartStmt.toString());
+			con.remove(hasPartStmt);
+		}
+	}
+
+	public Value[] getPmidsBatch(int batchNumber) {
+	}
+	public String getAbstract(String pmid) {
+	}
+
 
 
 	public static void main(String args[]) {
@@ -117,8 +161,15 @@ public class GetAbstracts {
 			GetAbstracts ga = new GetAbstracts();
 			//ga.query(basicQuery);
 			//ga.query(abstractsQuery);
+
+			logger.info("DELETING...");
+			ga.deleteSets();
+
+			logger.info("CREATING...");
 			ga.createSets();
-			
+
+			logger.info("QUERYING...");
+			ga.runQueries();
 		}
 		catch (Exception e) {
 			logger.error(e);
@@ -131,7 +182,7 @@ public class GetAbstracts {
 
 	static final String prefixes 
 		= "prefix bibo: <http://purl.org/ontology/bibo/>\n"
-		+ "prefix ro:   <http://www.obofoundry.org/ro/ro.owl#>\n"
+		+ "prefix ro:   http://www.obofoundry.org/ro/ro.owl#\n"
 		+ "prefix iao:  <http://purl.obolibrary.org/obo/>\n"
 		+ "prefix chris:  <http://com.croeder/chris/>\n";
 
@@ -140,6 +191,7 @@ public class GetAbstracts {
 	static final String getPmidsQuery = prefixes 
 		+ "select ?s "
 		+ "{ ?s  bibo:pmid ?p . } order by ?s ";
+		//+ "{ ?s  bibo:pmid ?p . } order by ?s LIMIT 1000";
 
 	static final String abstractsQuery = prefixes 
 		+ "select ?s ?o2 "
