@@ -4,6 +4,7 @@ package com.croeder.sesame_interface;
 import com.franz.agraph.repository.AGCatalog;
 import com.franz.agraph.repository.AGRepository;
 import com.franz.agraph.repository.AGServer;
+import com.franz.agraph.repository.AGValueFactory;
 
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -16,11 +17,12 @@ import org.apache.log4j.Logger;
 
 import org.openrdf.repository.base.RepositoryConnectionBase;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.model.impl.ValueFactoryBase;
 
 
-public class AGConnection implements ConnectionInstance {
+public class AGConnectionInstance implements ConnectionInstance {
 
-	private Logger logger = Logger.getLogger(AGConnection.class);
+	private Logger logger = Logger.getLogger(AGConnectionInstance.class);
 
 	private RepositoryConnectionBase conn;
 	private AGServer server;
@@ -32,7 +34,7 @@ public class AGConnection implements ConnectionInstance {
 	private String repoName;
 	
 
-	public AGConnection(String propertiesFilename) {
+	public AGConnectionInstance(String propertiesFilename) {
 		readProperties(propertiesFilename);
 		server = new AGServer(serverURI, username, password);
 		AGCatalog catalog = server.getRootCatalog();
@@ -50,6 +52,10 @@ public class AGConnection implements ConnectionInstance {
 
 	public RepositoryConnectionBase getConnection() throws RepositoryException{
 		return repo.getConnection();
+	}
+
+	public ValueFactoryBase getValueFactory() {
+		return new AGValueFactory(repo);
 	}
 
 	private void readProperties(String propertiesFileName) {

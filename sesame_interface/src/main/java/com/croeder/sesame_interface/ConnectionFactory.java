@@ -24,9 +24,9 @@ public class ConnectionFactory {
 	private Logger logger = Logger.getLogger(ConnectionFactory.class);
 
 	private String[] vendorNames = {"AG"};
-	private String[] classNames  = {"com.croeder.sesame_interface.AGConnection"};
+	private String[] classNames  = {"com.croeder.sesame_interface.AGConnectionInstance"};
 	String vendor="AG";
-	HashMap<String, String>  classHash;
+	HashMap<String, String>  classMap;
 	
 	public ConnectionFactory() {
 		this(defaultPropertiesFileName);
@@ -36,20 +36,20 @@ public class ConnectionFactory {
 		this.propertiesFileName = propertiesFileName;
 		assert(vendorNames.length == classNames.length);
 		readProperties(propertiesFileName);
-		classHash = new HashMap<String, String>();
+		classMap = new HashMap<String, String>();
 		HashMap<String, String>  hash = new HashMap<String, String>();
 		for (int i=0; i<vendorNames.length; i++) {
-			classHash.put(vendorNames[i], classNames[i]);
+			classMap.put(vendorNames[i], classNames[i]);
 		}
 	}
 
-	public RepositoryConnectionBase getConnection(String vendor) 
+	public ConnectionInstance getConnection(String vendor) 
 	throws ClassNotFoundException, InstantiationException, NoSuchMethodException, IllegalAccessException, InvocationTargetException,  RepositoryException {
-		assert(classHash.keySet().contains(vendor));
-		Class<?> clazz = Class.forName(classHash.get(vendor));
+		assert(classMap.keySet().contains(vendor));
+		Class<?> clazz = Class.forName(classMap.get(vendor));
 		Constructor<?> ctor = clazz.getConstructor(String.class);
 		ConnectionInstance conn = (ConnectionInstance) ctor.newInstance(propertiesFileName);
-		return conn.getConnection();
+		return conn;
 	}
 
 	private void readProperties(String propertiesFileName) {
