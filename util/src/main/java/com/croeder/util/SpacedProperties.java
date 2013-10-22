@@ -25,7 +25,7 @@ public class SpacedProperties {
 		this.namespace = namespace;
 		readProperties(propertiesFile);
 		logger.info("read properties file: " + propertiesFile + " with namespace: " + namespace);
-		dumpProperties();
+		//dumpProperties();
 	}
 
 	public String get(String name) {

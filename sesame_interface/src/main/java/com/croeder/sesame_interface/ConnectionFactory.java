@@ -43,7 +43,7 @@ public class ConnectionFactory {
 	public ConnectionFactory(String propertiesFilename, String propertiesPrefix) {
 
 		props = new SpacedProperties(new File(propertiesFilename), propertiesPrefix);
-		props.dumpProperties();
+		//props.dumpProperties();
 
 		// build vendor name-->class map
 		assert(vendorNames.length == classNames.length);
