@@ -1,8 +1,11 @@
 package com.croeder.sesame_interface;
 
-import org.openrdf.repository.base.RepositoryConnectionBase;
+import java.util.List;
+import java.util.ArrayList;
 
-import org.openrdf.model.impl.ValueFactoryBase;
+import org.apache.log4j.Logger;
+
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.Statement;;
 import org.openrdf.model.Literal;
@@ -19,12 +22,9 @@ import org.openrdf.query.Update;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import org.apache.log4j.Logger;
-
-import java.util.List;
-import java.util.ArrayList;
 
 
 // http://www.franz.com/agraph/support/documentation/v4/sparql-tutorial.html
@@ -61,12 +61,12 @@ public class GetAbstracts {
 	public final URI denotesUri;
 
 	static Logger logger = Logger.getLogger(GetAbstracts.class);
-	RepositoryConnectionBase con;
-	ValueFactoryBase valueFactory;
+	RepositoryConnection con;
+	ValueFactory valueFactory;
 	QueryLanguage ql = QueryLanguage.SPARQL;
 
 	public GetAbstracts() throws Exception {
-		ConnectionFactory factory = new ConnectionFactory();
+		ConnectionFactory factory = new ConnectionFactory("conn.ag");
 		ConnectionInstance ci = factory.getConnection("AG");
 		con = ci.getConnection();
 		valueFactory = ci.getValueFactory();

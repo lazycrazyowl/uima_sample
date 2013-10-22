@@ -16,56 +16,62 @@ import org.apache.log4j.Logger;
 import org.openrdf.repository.base.RepositoryConnectionBase;
 import org.openrdf.repository.RepositoryException;
 
+import com.croeder.util.SpacedProperties;
 
 public class ConnectionFactory {
 
-	public final static String  defaultPropertiesFileName = "target/classes/connection.properties";
-	public String  propertiesFileName = "connection.properties";
+	public final static String  defaultPropertiesFilename = "target/classes/connection.properties";
+	public final static String VENDOR_PROPERTY = "vendor";
+
+	private SpacedProperties props = null;
+
+
 	private Logger logger = Logger.getLogger(ConnectionFactory.class);
 
-	private String[] vendorNames = {"AG"};
-	private String[] classNames  = {"com.croeder.sesame_interface.AGConnectionInstance"};
+	private String[] vendorNames = {"AG", "SAIL"};
+	private String[] classNames  = {
+		"com.croeder.sesame_interface.AGConnectionInstance",
+		"com.croeder.sesame_interface.SAILConnectionInstance"
+	};
 	String vendor="AG";
 	HashMap<String, String>  classMap;
 	
-	public ConnectionFactory() {
-		this(defaultPropertiesFileName);
+	public ConnectionFactory(String propertiesPrefix) {
+		this(defaultPropertiesFilename, propertiesPrefix);
 	}
 
-	public ConnectionFactory(String propertiesFileName) {
-		this.propertiesFileName = propertiesFileName;
+	public ConnectionFactory(String propertiesFilename, String propertiesPrefix) {
+
+		props = new SpacedProperties(new File(propertiesFilename), propertiesPrefix);
+		props.dumpProperties();
+
+		// build vendor name-->class map
 		assert(vendorNames.length == classNames.length);
-		readProperties(propertiesFileName);
 		classMap = new HashMap<String, String>();
 		HashMap<String, String>  hash = new HashMap<String, String>();
 		for (int i=0; i<vendorNames.length; i++) {
 			classMap.put(vendorNames[i], classNames[i]);
 		}
+
+		vendor = props.get(VENDOR_PROPERTY);
 	}
 
-	public ConnectionInstance getConnection(String vendor) 
-	throws ClassNotFoundException, InstantiationException, NoSuchMethodException, IllegalAccessException, InvocationTargetException,  RepositoryException {
+	public ConnectionInstance getConnection(String vendor)  {
 		assert(classMap.keySet().contains(vendor));
-		Class<?> clazz = Class.forName(classMap.get(vendor));
-		Constructor<?> ctor = clazz.getConstructor(String.class);
-		ConnectionInstance conn = (ConnectionInstance) ctor.newInstance(propertiesFileName);
-		return conn;
-	}
-
-	private void readProperties(String propertiesFileName) {
+		ConnectionInstance conn = null;
 		try {
-			// TODO: do stream from classpath
-			InputStream propsStream = new FileInputStream(new File(propertiesFileName));
-			Properties props = new Properties();
-           	props.load(propsStream);
-			vendor = props.getProperty("conn.vendor");
+			Class<?> clazz = Class.forName(classMap.get(vendor));
+			Constructor<?> ctor = clazz.getConstructor(SpacedProperties.class);
+			conn = (ConnectionInstance) ctor.newInstance(props);
 		}
-		catch (IOException e) {
+		catch (ClassNotFoundException | InstantiationException |  NoSuchMethodException 
+			|  IllegalAccessException |  InvocationTargetException  e) {
+			logger.error("error with vendor:" + vendor  + " props: " + props + " " + classMap.get(vendor));
 			logger.error(e);
 			e.printStackTrace();
-			throw new RuntimeException(e);
+			throw new RuntimeException(e);	
 		}
+		return conn;
 	}
-
 }
 

@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>edu.ucdenver.ccp</groupId>
-	<artifactId>wrapper-allegrograph</artifactId>
-	<version>4.11-SNAPSHOT</version>
+	<groupId>com.croeder</groupId>
+	<artifactId>sesame-interface</artifactId>
+	<version>0.1-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -11,6 +11,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.croeder</groupId>
+			<artifactId>util</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>com.franz</groupId>
 			<artifactId>agraph</artifactId>

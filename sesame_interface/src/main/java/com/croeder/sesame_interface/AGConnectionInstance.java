@@ -11,7 +11,7 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.Properties;
+import com.croeder.util.SpacedProperties;
 
 import org.apache.log4j.Logger;
 
@@ -32,18 +32,18 @@ public class AGConnectionInstance implements ConnectionInstance {
 	private String username;
 	private String password;
 	private String repoName;
-	
 
-	public AGConnectionInstance(String propertiesFilename) {
-		readProperties(propertiesFilename);
-		server = new AGServer(serverURI, username, password);
-		AGCatalog catalog = server.getRootCatalog();
+	public AGConnectionInstance(SpacedProperties properties) {
+		readProperties(properties);
+		properties.dumpProperties();
 		try {
+			server = new AGServer(serverURI, username, password);
+			AGCatalog catalog = server.getRootCatalog();
 			repo = catalog.openRepository(repoName);
 			repo.initialize();
 			conn = repo.getConnection();
 		}
-		catch (RepositoryException e) {
+		catch (NullPointerException | RepositoryException e) {
 			logger.error("serverURI is:\"" + serverURI + "\" repo name is \"" + repoName + "\"");
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -58,18 +58,19 @@ public class AGConnectionInstance implements ConnectionInstance {
 		return new AGValueFactory(repo);
 	}
 
-	private void readProperties(String propertiesFileName) {
+	private void readProperties(SpacedProperties properties) {
+        serverURI = properties.get("uri");
+        username = properties.get("username");
+        password = properties.get("password");
+        repoName = properties.get("reponame");
+	}
+
+	public void close() {
 		try {
-			// TODO: do stream from classpath
-			InputStream propsStream = new FileInputStream(new File(propertiesFileName));
-			Properties props = new Properties();
-            	props.load(propsStream);
-            	serverURI = props.getProperty("conn.uri");
-            	username = props.getProperty("conn.username");
-            	password = props.getProperty("conn.password");
-            	repoName = props.getProperty("conn.reponame");
+			repo.close();
+			server.close();
 		}
-		catch (IOException e) {
+		catch (RepositoryException e) {
 			logger.error(e);
 			e.printStackTrace();
 			throw new RuntimeException(e);
