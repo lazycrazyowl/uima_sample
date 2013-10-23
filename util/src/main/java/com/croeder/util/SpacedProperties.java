@@ -39,7 +39,7 @@ public class SpacedProperties {
             InputStream propsStream = new FileInputStream(propertiesFile);
             props = new Properties();
             props.load(propsStream);
-			dumpProperties();
+			//dumpProperties();
         }
         catch (IOException e) {
             logger.error(e);

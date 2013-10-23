@@ -56,8 +56,14 @@ public class ConnectionFactory {
 		vendor = props.get(VENDOR_PROPERTY);
 	}
 
-	public ConnectionInstance getConnection(String vendor)  {
-		assert(classMap.keySet().contains(vendor));
+	public ConnectionInstance getConnection()  {
+		if (!classMap.keySet().contains(vendor)) {
+			String errMsg = "No value: " + vendor + ", in properties file for vendor property: " 
+				+ props.get(VENDOR_PROPERTY) + " under key: " + VENDOR_PROPERTY + "."
+				+ "Check  your properties file and properties prefix value.";
+			logger.error(errMsg);
+			throw new RuntimeException(errMsg);
+		}
 		ConnectionInstance conn = null;
 		try {
 			Class<?> clazz = Class.forName(classMap.get(vendor));

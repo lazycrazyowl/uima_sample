@@ -72,7 +72,7 @@ public class ConnectionInstanceTest_Base {
 			con.add(uberContainsStmt);
 
 			for (int j=0; j<num_docs_per_batch; j++) {
-				URI medlineUri = valueFactory.createURI(medline, "299988" + i + "_"  + j);
+				URI medlineUri = valueFactory.createURI(medline, "TESTDOC_" + i + "_"  + j);
 				Statement containsStmt = new StatementImpl(batchUri, hasPartUri, medlineUri);
 				con.add(containsStmt);
 			}
@@ -85,14 +85,14 @@ public class ConnectionInstanceTest_Base {
 		for (int i=0 ; i<num_batches; i++) {
 			URI batchUri = valueFactory.createURI(chris, "pmid_batch_" + i);
         	Statement  topStmt = new StatementImpl(topUri, hasPartUri, batchUri);
-        	logger.info("TOP DELETE: " + topStmt.toString());
+        	//logger.info("TOP DELETE: " + topStmt.toString());
         	con.remove(topStmt);
 		}
 
         for (int i=0; i<num_batches; i++) {
             URI batchUri = valueFactory.createURI(chris, "pmid_batch_" + i);
 			for (int j=0; j<num_docs_per_batch; j++) {
-				URI medlineUri = valueFactory.createURI(medline, "299988" + i + "_"  + j);
+				URI medlineUri = valueFactory.createURI(medline, "TESTDOC_" + i + "_"  + j);
 				Statement containsStmt = new StatementImpl(batchUri, hasPartUri, medlineUri);
             	con.remove(containsStmt);
 			}
@@ -103,7 +103,7 @@ public class ConnectionInstanceTest_Base {
 	public void checkTop() throws Exception {
 		String queryTop = prefixes 	+ "select  ?pmid WHERE "
 									+ "{ chris:pmid_batch_set ?p ?batch .}";
-		logger.info(queryTop);
+		//logger.info(queryTop);
 		TupleQuery tq = null;
 		TupleQueryResult result = null;
 		try {
@@ -112,7 +112,7 @@ public class ConnectionInstanceTest_Base {
 			for (int batch_number=0; batch_number < num_batches; batch_number++) {
 				URI batchUri = valueFactory.createURI(chris, "pmid_batch_" + batch_number);
 				URI hasPartUri = valueFactory.createURI(ro, "has_part");
-				logger.info("querying... " + batch_number);
+				//logger.info("querying... " + batch_number);
 				tq.setBinding("batch", batchUri);
 				tq.setBinding("p", hasPartUri);
 				result = tq.evaluate();
@@ -129,7 +129,7 @@ public class ConnectionInstanceTest_Base {
 		String queryTop = prefixes 	+ "select  ?batch ?pmid WHERE "
 									+ "{ chris:pmid_batch_set ?p ?batch .\n"
 								   	+ "  ?batch ?p2 ?pmid}";
-		logger.info(queryTop);
+		//logger.info(queryTop);
 		TupleQuery tq = null;
 		TupleQueryResult result = null;
 		try {
@@ -138,16 +138,16 @@ public class ConnectionInstanceTest_Base {
 			for (int batch_number=0; batch_number < num_batches; batch_number++) {
 				URI batchUri = valueFactory.createURI(chris, "pmid_batch_" + batch_number);
 				URI hasPartUri = valueFactory.createURI(ro, "has_part");
-				logger.info("querying... " + batch_number);
+				//logger.info("querying... " + batch_number);
 				tq.setBinding("batch", batchUri);
 				tq.setBinding("p", hasPartUri);
 				tq.setBinding("p2", hasPartUri);
 				result = tq.evaluate();
 				while (result.hasNext()) {
-					logger.info("next result:" + result.toString());
+					//logger.info("next result:" + result.toString());
 					BindingSet bs = (BindingSet) result.next();
 					for (Binding b : bs) {
-						logger.info(b.getValue());
+						//logger.info(b.getValue());
 						//returnValues.add(b.getValue());
 					}
 				}

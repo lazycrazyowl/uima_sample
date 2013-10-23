@@ -44,7 +44,7 @@ public class AGConnectionInstance_Test extends ConnectionInstanceTest_Base {
 	@Before
 	public void setup() throws Exception {
 		ConnectionFactory factory = new ConnectionFactory("conn.ag");
-		ConnectionInstance ci = factory.getConnection("AG");
+		ConnectionInstance ci = factory.getConnection();
 		con = ci.getConnection();
 		valueFactory = ci.getValueFactory();
 

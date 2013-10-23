@@ -45,7 +45,7 @@ public class SAILConnectionInstance_Test extends ConnectionInstanceTest_Base {
 	@Before
 	public void setup() throws Exception {
 		ConnectionFactory factory = new ConnectionFactory("conn.sail");
-		ci = factory.getConnection("SAIL");
+		ci = factory.getConnection();
 		con = ci.getConnection();
 		valueFactory = ci.getValueFactory();
 
