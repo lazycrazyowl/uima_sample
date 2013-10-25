@@ -34,10 +34,10 @@ import org.openrdf.repository.RepositoryException;
 public class GetAbstracts extends ServiceBase {
 
 	static Logger logger = Logger.getLogger(GetAbstracts.class);
-	final int batch_size = 100;
 
 	URI hasPartUri;
 	URI uberBatchUri;
+	int batch_size=100;
 
 	public GetAbstracts(String prefix) throws Exception {
 		super(prefix);
@@ -50,6 +50,11 @@ public class GetAbstracts extends ServiceBase {
 	}
 
 	public void createSets() throws Exception {
+		createSets(0, 0, 1000);
+	}
+
+	protected void createSets(int limit, int offset, int  batch_size) throws Exception {
+		this.batch_size = batch_size;
 		String getPmidsQuery = prefixes 
 			+ "select ?s "
 			+ "{ ?s  bibo:pmid ?p . } order by ?s ";
@@ -59,20 +64,24 @@ public class GetAbstracts extends ServiceBase {
 
 		URI batchUri = null;
 		int batch_number=0;
+		int batch_count=0;
 		int i=-1; 
-		while (result.hasNext()  ) {	
+		while (result.hasNext() && (limit==0 || batch_count < limit) ) {	
 			i++;
-			if (i % batch_size == 0) {
-				batch_number = i / batch_size;
-				batchUri = valueFactory.createURI(chris, "pmid_batch_" + batch_number);
-				Statement uberContainsStmt = new StatementImpl(uberBatchUri, hasPartUri, batchUri);
-				con.add(uberContainsStmt);
+			if (i >=  offset) {
+				batch_count++;
+				if (i % batch_size == 0) {
+					batch_number = i / batch_size;
+					batchUri = valueFactory.createURI(chris, "pmid_batch_" + batch_number);
+					Statement uberContainsStmt = new StatementImpl(uberBatchUri, hasPartUri, batchUri);
+					con.add(uberContainsStmt);
+				}
+	
+				BindingSet bs = (BindingSet) result.next();
+				Binding b = bs.iterator().next();
+				Statement  itemStmt = new StatementImpl(batchUri, hasPartUri, b.getValue());
+				con.add(itemStmt);
 			}
-
-			BindingSet bs = (BindingSet) result.next();
-			Binding b = bs.iterator().next();
-			Statement  itemStmt = new StatementImpl(batchUri, hasPartUri, b.getValue());
-			con.add(itemStmt);
 		}
 		logger.error("createSets: " + i);
 	}
@@ -128,47 +137,10 @@ public class GetAbstracts extends ServiceBase {
 		return returnValues;
 	}
 
-
-
-
 	public List<URI> getPmidsBatch(int batchNumber)  {
 		URI batchUri = valueFactory.createURI(chris, "pmid_batch_" + batchNumber);
 		return getPmidsBatch(batchUri);
 	}
-
-public List<URI> wtf(int batchNumber) {
-		URI batchUri = valueFactory.createURI(chris, "pmid_batch_" + batchNumber);
-		String queryString = prefixes + "SELECT  ?pmid  WHERE "
-								+ "{ ?batch 					ro:has_part ?pmid .}";
-		List<URI> returnValues = new ArrayList<>();
-		int i=0; int j=0;
-		TupleQuery tq = null;
-		TupleQueryResult result = null;
-		try {
-			tq = con.prepareTupleQuery(sparql, queryString);
-			tq.setIncludeInferred(false);
-			tq.setBinding("batch", batchUri);
-			result = tq.evaluate();
-			while (result.hasNext()) {
-				i++;
-				BindingSet bs = (BindingSet) result.next();
-				for (Binding b : bs) {
-					j++;
-					returnValues.add((URI) b.getValue());  //XXX
-				}
-			}
-			result.close();
-		}
-		catch (QueryEvaluationException | MalformedQueryException | RepositoryException  e) {
-			logger.error("" +  tq.toString());
-			logger.error(e);
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-
-		return returnValues;
-	}
-
 
 	public List<URI> getPmidsBatch(URI batchUri) {
 		String queryString = prefixes + "SELECT  ?pmid  WHERE "
@@ -203,7 +175,6 @@ public List<URI> wtf(int batchNumber) {
 
 		return returnValues;
 	}
-
 
 	public String getAbstract(String pmid) {
 		URI medlineUri = valueFactory.createURI(medline, pmid);
@@ -240,7 +211,6 @@ public List<URI> wtf(int batchNumber) {
 		return abstractString;
 	}
 
-
 	public static void main(String args[]) {
 		try {
 			GetAbstracts ga = new GetAbstracts("conn.ag");
@@ -254,12 +224,7 @@ public List<URI> wtf(int batchNumber) {
 			}
 
 			ga.createSets();
-	
-			{
-				List<URI> list = ga.wtf(0);
-				HashSet<URI> set = new HashSet(list);
-				logger.info("batch 0 got " + list.size() + " abstracts, " + set.size() + " unique");
-			}
+			
 			List<URI> list = ga.getPmidsBatch(0);
 			HashSet<URI> set = new HashSet(list);
 			logger.info("batch 0 got " + list.size() + " abstracts, " + set.size() + " unique");
