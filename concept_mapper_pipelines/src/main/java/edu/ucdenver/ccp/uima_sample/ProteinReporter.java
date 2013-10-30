@@ -1,5 +1,4 @@
-// Copyright 2012, Chris Roeder 
-package com.croeder.uima_sample;
+package edu.ucdenver.ccp.uima_sample;
 
 import static org.uimafit.util.JCasUtil.select;
 

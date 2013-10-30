@@ -1,4 +1,4 @@
-package com.croeder.uima_sample;
+package edu.ucdenver.ccp.uima_sample;
 
 // from http://code.google.com/p/uimafit/wiki/GettingStarted
 

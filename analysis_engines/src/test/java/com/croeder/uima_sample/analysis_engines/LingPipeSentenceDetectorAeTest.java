@@ -1,4 +1,4 @@
-package com.croeder.uima_sample.analysis_engines;
+package edu.ucdenver.ccp.uima_sample.analysis_engines;
 
 import java.io.IOException;
 
@@ -12,8 +12,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import org.uimafit.pipeline.SimplePipeline;
 
-import com.croeder.uima_sample.annotation.SentenceAnnotation;
-import com.croeder.uima_sample.analysis_engines.LingPipeSentenceDetector_AE;
+import edu.ucdenver.ccp.uima_sample.annotation.SentenceAnnotation;
+import edu.ucdenver.ccp.uima_sample.analysis_engines.LingPipeSentenceDetector_AE;
 
 public class LingPipeSentenceDetectorAeTest  extends AnalysisEngineTest {
 

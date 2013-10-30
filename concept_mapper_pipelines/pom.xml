@@ -4,9 +4,9 @@
 
 	<description>simple uima examples</description>
 
-	<groupId>com.croeder</groupId>
+	<groupId>edu.ucdenver.ccp</groupId>
 	<artifactId>uima_sample_concept_mapper_pipelines</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.1-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,7 +16,7 @@
 	<developers>
 		<developer>
 			<id>chris.roeder</id>
-			<email>croeder@croeder.com</email>
+			<email>chris.roeder@ucdenver.edu</email>
 			<name>Chris Roeder</name>
 		</developer>
 	</developers>
@@ -51,7 +51,7 @@
             <version>0.10.2</version>
         </dependency>
 		<dependency>
-    		<groupId>com.croeder</groupId>
+    		<groupId>edu.ucdenver.ccp</groupId>
     		<artifactId>uima_sample_analysis_engines</artifactId>
     		<version>1.0-SNAPSHOT</version>
         </dependency>
@@ -107,25 +107,7 @@
 	                    </goals>
 	                </execution>
 	            </executions>
-	            <configuration>
-	                <!--<mainClass>com.croeder.uima_sample.GetStartedQuickAE</mainClass> -->
-					<!-- mvn compile exec:java  -->
-
-	                <!-- <mainClass>com.croeder.uima_sample.BaseUimaFitPipeline</mainClass> -->
-					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/?????? -->
-
-					<!--<mainClass>com.croeder.uima_sample.ProteinPipeline</mainClass>-->
-					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/medline/pubmed_batches/batch_pubmed_005533/ -->
-
-
-					<mainClass>com.croeder.uima_sample.ConceptMapperPipeline</mainClass> 
-					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/medline/pubmed_batches/batch_pubmed_005533/  -Ddictionary=cmDict-GO.xml-->
-
-	                <arguments>
-					  <argument>${input}</argument> 
-					  <argument>${dictionary}</argument> 
-	                </arguments>
-	            </configuration>
+	            <configuration/>
           	</plugin>
 
 			<plugin>
@@ -152,11 +134,6 @@
                                 </arguments>
                             </configuration>
                         </execution>
-
-                        <!-- <execution> <id>export-descriptor-xml</id> <phase>prepare-package</phase>
-                            <goals> <goal>java</goal> </goals> <configuration> <mainClass>edu.ucdenver.ccp.nlp.core.uima.build.XmlDescriptorWriter</mainClass>
-                            <arguments> <argument>${project.basedir}/src/main/java</argument> <argument>${project.build.directory}/uima-descriptors</argument>
-                            <argument>${project.version}</argument> </arguments> </configuration> </execution> -->
 
                     </executions>
             </plugin>

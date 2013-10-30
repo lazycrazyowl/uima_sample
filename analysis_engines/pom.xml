@@ -4,31 +4,23 @@
 
 	<description>simple uima examples</description>
 
-	<groupId>com.croeder</groupId>
+	<groupId>edu.ucdenver.ccp</groupId>
 	<artifactId>uima_sample_analysis_engines</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jcasgen.typesystem>com/croeder/uima_sample/TypeSystem.xml</jcasgen.typesystem>
-        <jcasgen.conceptmapper.typesystem>com/croeder/uima_sample/ConceptMapperSupplementTypeSystem.xml</jcasgen.conceptmapper.typesystem>
+        <jcasgen.typesystem>edu/ucdenver/ccp//uima_sample/TypeSystem.xml</jcasgen.typesystem>
+        <jcasgen.conceptmapper.typesystem>edu/ucdenver/ccp/uima_sample/ConceptMapperSupplementTypeSystem.xml</jcasgen.conceptmapper.typesystem>
     </properties>
 
 	<developers>
 		<developer>
 			<id>chris.roeder</id>
-			<email>croeder@croeder.com</email>
+			<email>chris.roeder@ucdenver.edu</email>
 			<name>Chris Roeder</name>
 		</developer>
 	</developers>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>croeder-aws-repo</id>
-            <name>croeder-aws-repo</name>
-            <url>http://54.225.110.188:8081/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
-    </distributionManagement>
 
 	<dependencies>
   		<dependency>
@@ -63,29 +55,6 @@
             <artifactId>lingpipe</artifactId>
             <version>3.9.3</version>
         </dependency>
-<!-- ====================      
-
-		<dependency>
-            <groupId>edu.ucdenver.ccp</groupId>
-            <artifactId>common</artifactId>
-            <version>1.4-SNAPSHOT</version>
-        </dependency>
-		<dependency>
-            <groupId>edu.ucdenver.ccp</groupId>
-            <artifactId>ccp-nlp-ext-uima-annotators-sentencedetectors</artifactId>
-            <version>3.3-SNAPSHOT</version>
-        </dependency>
-		<dependency>
-            <groupId>edu.ucdenver.ccp</groupId>
-            <artifactId>ccp-nlp-uima</artifactId>
-            <version>3.3-SNAPSHOT</version>
-        </dependency>
-		<dependency>
-            <groupId>edu.ucdenver.ccp</groupId>
-            <artifactId>ccp-nlp-ext-uima-syntax</artifactId>
-            <version>3.0-SNAPSHOT</version>
-        </dependency>
-      -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -138,29 +107,7 @@
 	                    </goals>
 	                </execution>
 	            </executions>
-	            <configuration>
-	                <!--<mainClass>com.croeder.uima_sample.GetStartedQuickAE</mainClass> -->
-					<!-- mvn compile exec:java  -->
-
-	                <!-- <mainClass>com.croeder.uima_sample.BaseUimaFitPipeline</mainClass> -->
-					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/?????? -->
-
-					<!--<mainClass>com.croeder.uima_sample.ProteinPipeline</mainClass>-->
-					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/medline/pubmed_batches/batch_pubmed_005533/ -->
-
-					<!-- <mainClass>com.croeder.uima_sample.ConceptMapperUimaFitPipeline</mainClass> -->
-					<!-- <mainClass>com.croeder.uima_sample.ConceptMapperPipeline</mainClass> -->
-					<!-- 
-					-->
-
-						<mainClass>com.croeder.uima_sample.ConceptMapperUCDenverPipeline</mainClass> 
-					<!-- mvn compile exec:java -Dinput=/Users/roederc/work/data/medline/pubmed_batches/batch_pubmed_005533/  -Ddictionary=cmDict-GO.xml-->
-
-	                <arguments>
-					  <argument>${input}</argument> 
-					  <argument>${dictionary}</argument> 
-	                </arguments>
-	            </configuration>
+	            <configuration/>
           	</plugin>
 			<plugin>
                     <!-- This plugin generates java files with JCasGen.

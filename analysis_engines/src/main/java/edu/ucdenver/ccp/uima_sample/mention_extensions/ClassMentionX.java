@@ -1,4 +1,4 @@
-package com.croeder.uima_sample.mention_extensions;
+package edu.ucdenver.ccp.uima_sample.mention_extensions;
 
 
 import java.util.Collection;
@@ -9,11 +9,11 @@ import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.StringArray;
 
-import com.croeder.uima_sample.mention.ClassMention;
-import com.croeder.uima_sample.mention.SlotMention;
-import com.croeder.uima_sample.mention.StringSlotMention;
-import com.croeder.uima_sample.mention.PrimitiveSlotMention;
-import com.croeder.uima_sample.mention.ComplexSlotMention;
+import edu.ucdenver.ccp.uima_sample.mention.ClassMention;
+import edu.ucdenver.ccp.uima_sample.mention.SlotMention;
+import edu.ucdenver.ccp.uima_sample.mention.StringSlotMention;
+import edu.ucdenver.ccp.uima_sample.mention.PrimitiveSlotMention;
+import edu.ucdenver.ccp.uima_sample.mention.ComplexSlotMention;
 
 // TODO: dream up a way to deal with the (remote) possibility of someone
 // else using just plain ClassMention, or even UIMA type compatible,

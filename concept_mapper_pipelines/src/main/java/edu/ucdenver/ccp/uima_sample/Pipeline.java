@@ -1,4 +1,4 @@
-package com.croeder.uima_sample;
+package edu.ucdenver.ccp.uima_sample;
 
 
 import java.util.Arrays;
@@ -51,8 +51,8 @@ public class Pipeline {
 	static private  Logger logger = Logger.getLogger(Pipeline.class);
 	protected static final String[] typeSystemStrs = {
        	"analysis_engine.primitive.DictTerm",
-       	"com.croeder.uima_sample.ConceptMapperSupplementTypeSystem",
-       	"com.croeder.uima_sample.TypeSystem",
+       	"edu.ucdenver.ccp.uima_sample.ConceptMapperSupplementTypeSystem",
+       	"edu.ucdenver.ccp.uima_sample.TypeSystem",
        	"org.apache.uima.conceptMapper.support.tokenizer.TokenAnnotation",
        	"org.apache.uima.examples.SourceDocumentInformation"
     };

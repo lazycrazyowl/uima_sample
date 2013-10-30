@@ -1,5 +1,5 @@
 
-package com.croeder.uima_sample.analysis_engines;
+package edu.ucdenver.ccp.uima_sample.analysis_engines;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,23 +30,23 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.cas.text.AnnotationIndex;
 
 //import org.apache.uima.conceptMapper.DictTerm;
-import com.croeder.uima_sample.annotation.IdDictTerm;
+import edu.ucdenver.ccp.uima_sample.annotation.IdDictTerm;
 
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.descriptor.SofaCapability;
 
 
-import com.croeder.uima_sample.annotation.SentenceAnnotation;
-import com.croeder.uima_sample.annotation.TextAnnotation;
-//import com.croeder.uima_sample.annotation.TokenAnnotation;
+import edu.ucdenver.ccp.uima_sample.annotation.SentenceAnnotation;
+import edu.ucdenver.ccp.uima_sample.annotation.TextAnnotation;
+//import edu.ucdenver.ccp.uima_sample.annotation.TokenAnnotation;
 import org.apache.uima.conceptMapper.support.tokenizer.TokenAnnotation;
-import com.croeder.uima_sample.annotation.Annotator;
-import com.croeder.uima_sample.mention.ClassMention;
-import com.croeder.uima_sample.mention_extensions.ClassMentionX;
-import com.croeder.uima_sample.mention.IntegerSlotMention;
-import com.croeder.uima_sample.mention.StringSlotMention;
-import com.croeder.uima_sample.mention.PrimitiveSlotMention;
-import com.croeder.uima_sample.mention.ComplexSlotMention;
+import edu.ucdenver.ccp.uima_sample.annotation.Annotator;
+import edu.ucdenver.ccp.uima_sample.mention.ClassMention;
+import edu.ucdenver.ccp.uima_sample.mention_extensions.ClassMentionX;
+import edu.ucdenver.ccp.uima_sample.mention.IntegerSlotMention;
+import edu.ucdenver.ccp.uima_sample.mention.StringSlotMention;
+import edu.ucdenver.ccp.uima_sample.mention.PrimitiveSlotMention;
+import edu.ucdenver.ccp.uima_sample.mention.ComplexSlotMention;
 
 
 @SofaCapability

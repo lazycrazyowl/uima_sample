@@ -1,5 +1,6 @@
-// Copyright 2012, Chris Roeder 
-package com.croeder.uima_sample;;
+
+
+package edu.ucdenver.ccp.uima_sample;;
 
 
 
@@ -37,18 +38,15 @@ import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.pipeline.JCasIterable;
-import org.uimafit.component.xwriter.CASDumpWriter;
-
-// http://code.google.com/p/dkpro-core-asl/wiki/MyFirstDKProProject#Create_your_first_experiment
 
 
 
-public class ProteinPipeline  {
+public class BaseUimaFitPipeline  {
 
 	private static Logger logger = Logger.getLogger(BaseUimaFitPipeline.class);
 
 	protected static final String[] typeSystemStrs = {
-		"org.apache.uima.examples.SourceDocumentInformation",
+		"org.apache.uima.examples.SourceDocumentInformation",	
 		"descriptors.TutorialTypeSystem"
 	};
 
@@ -58,7 +56,7 @@ public class ProteinPipeline  {
 	List<AnalysisEngineDescription> aeDescList;
 
 
-	ProteinPipeline(File inputDir) throws ResourceInitializationException {
+	BaseUimaFitPipeline(File inputDir) throws ResourceInitializationException {
         tsd = TypeSystemDescriptionFactory.createTypeSystemDescription(typeSystemStrs);
 
         cr = CollectionReaderFactory.createCollectionReader(
@@ -73,16 +71,8 @@ public class ProteinPipeline  {
 
 		aeDescList = new ArrayList<AnalysisEngineDescription>();
 
-		aeDescList.add(AnalysisEngineFactory.createPrimitiveDescription(
-			ProteinAnnotator.class));
-
-		aeDescList.add(AnalysisEngineFactory.createPrimitiveDescription(
-			CASDumpWriter.class,
-			CASDumpWriter.PARAM_OUTPUT_FILE, "output.txt"));
-
-		aeDescList.add(AnalysisEngineFactory.createPrimitiveDescription(
-			ProteinReporter.class));
-
+		aeDescList.add( AnalysisEngineFactory.createPrimitiveDescription(
+			RoomNumberAnnotator.class));
     }
 
 
@@ -121,7 +111,7 @@ public class ProteinPipeline  {
 
 		// main part
 		try {
-			ProteinPipeline pipeline = new ProteinPipeline (inputDir);
+			BaseUimaFitPipeline pipeline = new BaseUimaFitPipeline (inputDir);
 			pipeline.go(inputDir);
 		}
 		catch(Exception x) {

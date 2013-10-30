@@ -1,5 +1,4 @@
-// Copyright 2012, Chris Roeder 
-package com.croeder.uima_sample;
+package edu.ucdenver.ccp.uima_sample;
 
 
 import java.io.IOException;
@@ -50,8 +49,8 @@ import org.uimafit.component.xwriter.XWriter;
 
 import uima.tt.TokenAnnotation;
 
-import com.croeder.uima_sample.analysis_engines.LingPipeSentenceDetector_AE;
-import com.croeder.uima_sample.analysis_engines.Debug_AE;
+import edu.ucdenver.ccp.uima_sample.analysis_engines.LingPipeSentenceDetector_AE;
+import edu.ucdenver.ccp.uima_sample.analysis_engines.Debug_AE;
 
 import org.xml.sax.SAXException;
 
@@ -109,12 +108,14 @@ public class ConceptMapperPipeline extends Pipeline  {
 			inputDir = new File(args[0]);
 		} 
 		catch(Exception x) {
-			System.out.println("error:" + x);
+			logger.error("trying to run with input:\"" + inputDir + "\"");
+			logger.error("error:" + x);
 			x.printStackTrace();
 			usage();
 			System.exit(2);
 		}
 		try {
+			logger.info("trying to run with input:\"" + inputDir + "\"");
 			ConceptMapperPipeline pipeline = new ConceptMapperPipeline(inputDir);
 	
 			BasicConfigurator.configure();
@@ -130,9 +131,10 @@ public class ConceptMapperPipeline extends Pipeline  {
 				}
 			}
 		}
-		catch(Exception x) {
-			System.err.println(x);
-			x.printStackTrace();
+		catch(Exception e) {
+			logger.error(e);
+			logger.error("trying to run with input:\"" + inputDir + "\"");
+			e.printStackTrace();
 			System.exit(3);
 		}
 	}

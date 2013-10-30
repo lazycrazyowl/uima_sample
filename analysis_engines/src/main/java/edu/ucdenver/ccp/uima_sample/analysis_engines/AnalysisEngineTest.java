@@ -1,4 +1,4 @@
-package com.croeder.uima_sample.analysis_engines;
+package edu.ucdenver.ccp.uima_sample.analysis_engines;
 
 import java.io.IOException;
 
@@ -12,8 +12,8 @@ import org.junit.Before;
 import org.uimafit.factory.JCasFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 
-import com.croeder.uima_sample.annotation.TokenAnnotation;
-import com.croeder.uima_sample.annotation.SentenceAnnotation;
+import edu.ucdenver.ccp.uima_sample.annotation.TokenAnnotation;
+import edu.ucdenver.ccp.uima_sample.annotation.SentenceAnnotation;
 
 public class AnalysisEngineTest {
 
@@ -58,7 +58,7 @@ public class AnalysisEngineTest {
 
 	protected TypeSystemDescription getTypeSystem() {
 		return TypeSystemDescriptionFactory.createTypeSystemDescription(
-			"com.croeder.uima_sample.TypeSystem");
+			"edu.ucdenver.ccp.uima_sample.TypeSystem");
 	}
 
 	@After
