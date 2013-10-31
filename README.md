@@ -6,6 +6,12 @@ both UIMA and uimaFIT tutorials. Some requires code from here:
 http://sourceforge.net/projects/bionlp-uima/files/ccp-nlp/v3.1/
 
 Chris Roeder, Nov. 2012
+Chris Roeder, Oct. 2013
+
+* simple_uima_example
+	** ProteinAnnotator.java
+	** ProteinReporter.java
+	** ProteinPipeline.java
 
 * analysis_engines
 	** AnalysisEngineTest.java

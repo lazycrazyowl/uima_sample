@@ -28,7 +28,7 @@
 	<version>1.0</version>
 	<types>
 		<typeDescription>
-			<name>edu.ucdenver.ccp.uima_sample.RoomNumber</name>
+			<name>edu.ucdenver.ccp.simple_uima_example.RoomNumber</name>
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
 			<features>
@@ -40,7 +40,7 @@
 			</features>
 		</typeDescription>
 		<typeDescription>
-			<name>edu.ucdenver.ccp.uima_sample.Protein</name>
+			<name>edu.ucdenver.ccp.simple_uima_example.Protein</name>
 			<description></description>
 			<supertypeName>uima.tcas.Annotation</supertypeName>
 			<features>

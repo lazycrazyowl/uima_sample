@@ -1,4 +1,4 @@
-package edu.ucdenver.ccp.uima_sample;
+package edu.ucdenver.ccp.uima_sample.analysis_engines;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

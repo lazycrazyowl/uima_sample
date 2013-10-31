@@ -1,5 +1,4 @@
-package edu.ucdenver.ccp.uima_sample;;
-
+package edu.ucdenver.ccp.simple_uima_example;
 
 
 import java.io.IOException;
@@ -28,8 +27,6 @@ import org.apache.uima.tools.components.FileSystemCollectionReader;
 
 import org.apache.uima.examples.SourceDocumentInformation;
 
-import org.apache.uima.conceptMapper.DictTerm;
-import org.apache.uima.conceptMapper.ConceptMapper;
 
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
@@ -44,7 +41,7 @@ import org.uimafit.component.xwriter.CASDumpWriter;
 
 public class ProteinPipeline  {
 
-	private static Logger logger = Logger.getLogger(BaseUimaFitPipeline.class);
+	private static Logger logger = Logger.getLogger(ProteinPipeline.class);
 
 	protected static final String[] typeSystemStrs = {
 		"org.apache.uima.examples.SourceDocumentInformation",
