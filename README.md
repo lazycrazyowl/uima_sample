@@ -6,9 +6,10 @@ both UIMA and uimaFIT tutorials. Some requires code from here:
 http://sourceforge.net/projects/bionlp-uima/files/ccp-nlp/v3.1/
 
 Chris Roeder, Nov. 2012
+
 Chris Roeder, Oct. 2013
 
-* simple_uima_example
+* simple_uima_example (standalone)
 	** ProteinAnnotator.java
 	** ProteinReporter.java
 	** ProteinPipeline.java
@@ -25,32 +26,15 @@ Chris Roeder, Oct. 2013
 		or that UIMA is in control of what objects get created in the JCas.
 
 * concept_mapper_pipelines
+	* *GetStartedQuickAE.java* This is a pipeline-less AE with direct JCAS creation and engine running. It's about as simple as you can get.
 
-	** GetStartedQuickAE.java
-		This is a pipeline-less AE with direct JCAS creation and engine
-		running. It's about as simple as you can get.
+	* *BaseUimaFitPipeline.java* This one is the basic RoomNumberAnnotator code from the UIMA tutorial.  It adds a pipeline, driven here by uimaFIT.:w RoomNumber.java RoomNumberAnnotator.java
 
-	** BaseUimaFitPipeline.java
-		This one is the basic RoomNumberAnnotator code from the UIMA tutorial.
-		It adds a pipeline, driven here by uimaFIT.:w
-		RoomNumber.java
-		RoomNumberAnnotator.java
+	* *ProteinPipeline.java* This is basically a type system modification over the RoomNumberAnnotator.  The maven pom includes steps to generate and include for compilation the type system classes.  It adds usage of the CASDumpWriter from uimafit.  Protein.java ProteinAnnotator.java
 
-	** ProteinPipeline.java
-		This is basically a type system modification over the RoomNumberAnnotator.
-		The maven pom includes steps to generate and include for compilation the type system classes.
-		It adds usage of the CASDumpWriter from uimafit.
-		Protein.java
-		ProteinAnnotator.java
+	* *ParameterExamplePipeline.java* (TBD) We need a subtle modification to show parameters uimaFIT-style.
 
-	** ParameterExamplePipeline.java (TBD)
-		We need a subtle modification to show parameters uimaFIT-style.
-
-	** ConceptMapperPipeline.java 
-		This set includes work from a number of people showing how to create a ConceptMapper
-		Dictionary from an OBO file, then run CM in a pipeline to create RDF output.
-		It uses xml files to describe the UIMA Analysis Engines.
-		See: https://groups.google.com/forum/?fromgroups#!topic/uimafit-users/BiCdfJrwGBE
+	* *ConceptMapperPipeline.java* This set includes work from a number of people showing how to create a ConceptMapper Dictionary from an OBO file, then run CM in a pipeline to create RDF output.  It uses xml files to describe the UIMA Analysis Engines.  See: https://groups.google.com/forum/?fromgroups#!topic/uimafit-users/BiCdfJrwGBE
 
 * lucene_pipelines
  
