@@ -5,26 +5,23 @@ some basic, simple, uima pipelines and analysis engines cribbed from
 both UIMA and uimaFIT tutorials. Some requires code from here:
 http://sourceforge.net/projects/bionlp-uima/files/ccp-nlp/v3.1/
 
-Chris Roeder, Nov. 2012
+Modifications:
+* Chris Roeder, Nov. 2012
+* Chris Roeder, Oct. 2013
 
-Chris Roeder, Oct. 2013
-
+Contents:
 * simple_uima_example (standalone)
-	** ProteinAnnotator.java
-	** ProteinReporter.java
-	** ProteinPipeline.java
+	* *ProteinAnnotator.java*
+	* *ProteinReporter.java*
+	* *ProteinPipeline.java*
 
 * analysis_engines
-	** AnalysisEngineTest.java
-	** Debug_AE.java
-	** LingPipeSentenceDetector_AE.java
-	** LingPipeSentenceDetectorAeTest.java
-	** ClassMentionX.java
-		An extension of the generated ClassMention class with a static function
-		that might have been a member of ClassMention or ClassMentionX if it
-		weren't for the fact you can't do type conversion as easily in Java
-		or that UIMA is in control of what objects get created in the JCas.
-
+	* *AnalysisEngineTest.java*
+	* *Debug_AE.java*
+	* *LingPipeSentenceDetector_AE.java*
+	* *LingPipeSentenceDetectorAeTest.java*
+	* *ClassMentionX.java* An extension of the generated ClassMention class with a static function that might have been a member of ClassMention or ClassMentionX if it weren't for the fact you can't do type conversion as easily in Java or that UIMA is in control of what objects get created in the JCas.
+  
 * concept_mapper_pipelines
 	* *GetStartedQuickAE.java* This is a pipeline-less AE with direct JCAS creation and engine running. It's about as simple as you can get.
 
