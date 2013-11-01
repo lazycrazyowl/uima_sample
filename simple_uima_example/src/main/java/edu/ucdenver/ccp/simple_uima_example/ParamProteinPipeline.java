@@ -6,33 +6,25 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.collection.CollectionReader;
-import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.tools.components.FileSystemCollectionReader;
-
 import org.apache.uima.examples.SourceDocumentInformation;
-
 
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
-import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.component.xwriter.CASDumpWriter;
 
 
@@ -106,7 +98,7 @@ public class ParamProteinPipeline  {
 			inputDir = new File(args[0]);
 		
 		} catch(Exception x) {
-			System.out.println("error:" + x);
+			System.out.println("error: " + x);
 			x.printStackTrace();
 			usage();
 			System.exit(2);
@@ -119,7 +111,7 @@ public class ParamProteinPipeline  {
 			pipeline.go(inputDir);
 		}
 		catch(Exception x) {
-			System.err.println(x);
+			System.err.println("error: " + x);
 			x.printStackTrace();
 			System.exit(3);
 		}

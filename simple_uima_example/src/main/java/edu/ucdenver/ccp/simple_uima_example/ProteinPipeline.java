@@ -24,9 +24,7 @@ import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.tools.components.FileSystemCollectionReader;
-
 import org.apache.uima.examples.SourceDocumentInformation;
-
 
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.CollectionReaderFactory;
@@ -34,9 +32,6 @@ import org.uimafit.factory.TypeSystemDescriptionFactory;
 import org.uimafit.pipeline.SimplePipeline;
 import org.uimafit.pipeline.JCasIterable;
 import org.uimafit.component.xwriter.CASDumpWriter;
-
-// http://code.google.com/p/dkpro-core-asl/wiki/MyFirstDKProProject#Create_your_first_experiment
-
 
 
 public class ProteinPipeline  {

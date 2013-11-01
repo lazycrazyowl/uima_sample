@@ -47,7 +47,8 @@ public class ParamProteinAnnotator extends JCasAnnotator_ImplBase {
 
 
 	public static final String PARAM_PATTERN_STRING 
-		= ConfigurationParameterFactory.createConfigurationParameterName(ParamProteinAnnotator.class, "patternString");
+		= ConfigurationParameterFactory.createConfigurationParameterName(
+			ParamProteinAnnotator.class, "patternString");
 
 	@ConfigurationParameter(mandatory=true, description="a regex string", defaultValue="(.*)")
 	private String patternString;

@@ -27,13 +27,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
 
 import org.apache.uima.jcas.JCas;
-
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
-
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+
 import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.JCasFactory;
