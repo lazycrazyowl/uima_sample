@@ -39,6 +39,7 @@
 				</featureDescription>
 			</features>
 		</typeDescription>
+
 		<typeDescription>
 			<name>edu.ucdenver.ccp.simple_uima_example.Protein</name>
 			<description></description>
@@ -56,5 +57,26 @@
 				</featureDescription>
 			</features>
 		</typeDescription>
+
+		<!-- Sentence and Token are basically the same as what OpenNLP-UIMA provides in it's namespace.	
+			 They don't include the jcasgen'ed versions, so I put something similar here -->	
+		<typeDescription>
+            <name>edu.ucdenver.ccp.simple_uima_example.types.SentenceAnnotation</name>
+			<supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+
+		<typeDescription>
+            <name>edu.ucdenver.ccp.simple_uima_example.types.TokenAnnotation</name>
+            <supertypeName>uima.tcas.Annotation
+            </supertypeName>
+            <features>
+                <featureDescription>
+                    <name>pos</name>
+                    <description>Part of speech</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+
 	</types>
 </typeSystemDescription>
