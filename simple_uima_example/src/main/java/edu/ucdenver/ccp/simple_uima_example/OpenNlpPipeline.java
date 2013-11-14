@@ -72,7 +72,7 @@ import edu.ucdenver.ccp.simple_uima_example.types.TokenAnnotation;
  **/
 public class OpenNlpPipeline  {
 
-	private static Logger logger = Logger.getLogger(ProteinPipeline.class);
+	private static Logger logger = Logger.getLogger(OpenNlpPipeline.class);
 
 	protected static final String[] typeSystemStrs = {
 		"org.apache.uima.examples.SourceDocumentInformation",
@@ -140,8 +140,8 @@ public class OpenNlpPipeline  {
 		aeDescList.add(AnalysisEngineFactory.createPrimitiveDescription(
 			ProteinReporter.class));
 
-		aeDescList.add(AnalysisEngineFactory.createPrimitiveDescription(
-			Debug_AE.class));
+	//	aeDescList.add(AnalysisEngineFactory.createPrimitiveDescription(
+	//		Debug_AE.class));
 
     }
 

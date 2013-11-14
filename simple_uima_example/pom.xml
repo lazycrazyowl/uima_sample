@@ -14,10 +14,14 @@
     </properties>
 
 	<developers>
-		<developer>
-			<id>chris.roeder</id>
+		<developer> <id>chris.roeder</id>
 			<email>chris.roeder@ucdenver.edu</email>
 			<name>Chris Roeder</name>
+		</developer>
+		<developer>
+			<id>generic.support</id>
+			<email>ccpsupport@ucdenver.edu</email>
+			<name>CCP Support</name>
 		</developer>
 	</developers>
 
