@@ -95,7 +95,7 @@ public class ProteinPipeline  {
     }
 
 
-	public void go(File inputDir)
+	public void go()
 	throws UIMAException, ResourceInitializationException, FileNotFoundException, IOException {
 		SimplePipeline.runPipeline(cr, aeDescList.toArray(new AnalysisEngineDescription[0]));
     }
@@ -130,7 +130,7 @@ public class ProteinPipeline  {
 		// main part
 		try {
 			ProteinPipeline pipeline = new ProteinPipeline (inputDir);
-			pipeline.go(inputDir);
+			pipeline.go();
 		}
 		catch(Exception x) {
 			System.err.println(x);

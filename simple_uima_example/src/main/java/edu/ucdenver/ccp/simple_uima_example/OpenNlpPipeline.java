@@ -146,7 +146,7 @@ public class OpenNlpPipeline  {
     }
 
 
-	public void go(File inputDir)
+	public void go()
 	throws UIMAException, ResourceInitializationException, FileNotFoundException, IOException {
 		SimplePipeline.runPipeline(cr, aeDescList.toArray(new AnalysisEngineDescription[0]));
     }
@@ -182,7 +182,7 @@ public class OpenNlpPipeline  {
 		// main part
 		try {
 			OpenNlpPipeline pipeline = new OpenNlpPipeline (inputDir);
-			pipeline.go(inputDir);
+			pipeline.go();
 		}
 		catch(Exception x) {
 			System.err.println("error: " + x);
