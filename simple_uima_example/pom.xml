@@ -76,21 +76,6 @@
 				</configuration>
 			</plugin>
 
-  			<plugin>
-	            <!-- run using "mvn exec:java" -->
-	            <groupId>org.codehaus.mojo</groupId>
-	            <artifactId>exec-maven-plugin</artifactId>
-	            <version>1.1</version>
-	            <executions>
-	                <execution>
-	                    <goals>
-	                        <goal>java</goal>
-	                    </goals>
-	                </execution>
-	            </executions>
-	            <configuration/>
-          	</plugin>
-
 			<plugin>
                     <!-- This plugin generates java files with JCasGen.
 						The phase makes it run with "mvn compile".
